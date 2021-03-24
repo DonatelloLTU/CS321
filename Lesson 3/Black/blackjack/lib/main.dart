@@ -97,16 +97,15 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              GameScreen(playerName: name, playerStash: stash),
+          builder: (context) => GameTable(playerName: name, playerStash: stash),
         ));
   }
 
-  // String getName() {
-  //   return name;
-  // }
-  //
-  // String getStash() {
-  //   return stash;
-  // }
+// String getName() {
+//   return name;
+// }
+//
+// String getStash() {
+//   return stash;
+// }
 }

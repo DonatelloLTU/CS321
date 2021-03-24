@@ -6,20 +6,20 @@ import 'package:blackjack/playing_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class GameScreen extends StatefulWidget {
-  final String playerName;
-  final String playerStash;
+class GameTable extends StatefulWidget {
+  String playerName;
+  String playerStash;
 
-  const GameScreen({Key key, this.playerName, this.playerStash})
-      : super(key: key);
-  //GameScreen();
+  GameTable({Key key, this.playerName, this.playerStash}) : super(key: key);
+
+  //GameTable();
   //final String namePlayers;
   //final String stashPlayers;
   @override
-  _GameScreenState createState() => _GameScreenState();
+  _GameTableState createState() => _GameTableState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class _GameTableState extends State<GameTable> {
   //Navigator.pop(context);
 
   List<PlayingCard> cardColumn1 = [];
@@ -176,39 +176,41 @@ class _GameScreenState extends State<GameScreen> {
           InkWell(
             child: cardDeckClosed.isNotEmpty
                 ? Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: TransformedCard(
-                      playingCard: cardDeckClosed.last,
-                    ),
-                  )
+              padding: const EdgeInsets.all(4.0),
+              child: TransformedCard(
+                playingCard: cardDeckClosed.last,
+              ),
+            )
                 : Opacity(
-                    opacity: 0.4,
-                    child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: TransformedCard(
-                        playingCard: PlayingCard(
-                          cardSuit: CardSuit.diamonds,
-                          cardType: CardType.five,
-                        ),
-                      ),
-                    ),
+              opacity: 0.4,
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: TransformedCard(
+                  playingCard: PlayingCard(
+                    cardSuit: CardSuit.diamonds,
+                    cardType: CardType.five,
                   ),
+                ),
+              ),
+            ),
             onTap: () {
               setState(() {
-                //add statements about if stop or burn then add to dealer
-                if (cardDeckClosed.isEmpty) {
-                  cardDeckClosed.addAll(cardDeckOpened.map((card) {
-                    return card
-                      ..opened = false
-                      ..faceUp = false;
-                  }));
-                  cardDeckOpened.clear();
-                } else {
-                  cardColumn1.add(
-                    cardDeckClosed.removeLast()
-                      ..faceUp = true
-                      ..opened = true,
-                  );
+                if (count < 22) {
+                  if (cardDeckClosed.isEmpty) {
+                    //addsCardsFrom the burnPile
+                    cardDeckClosed.addAll(cardDeckOpened.map((card) {
+                      return card
+                        ..opened = false
+                        ..faceUp = false;
+                    }));
+                    cardDeckOpened.clear();
+                  } else {
+                    cardColumn1.add(
+                      cardDeckClosed.removeLast()
+                        ..faceUp = true
+                        ..opened = true,
+                    );
+                  }
                 }
               });
             },
@@ -220,11 +222,22 @@ class _GameScreenState extends State<GameScreen> {
 
   Widget _buildChip() {
     return Container(
-      child: Center(
-        child: Text(
-          "10",
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+      child: InkWell(
+        child: Center(
+          child: Text(
+            "10",
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          ),
         ),
+        onTap: () {
+          setState(() {
+            int numberStash = int.parse(widget.playerStash);
+            if (numberStash >= 10) {
+              numberStash = numberStash - 10;
+              widget.playerStash = numberStash.toString();
+            }
+          });
+        },
       ),
       height: 40.0,
       width: 40.0,
@@ -238,11 +251,22 @@ class _GameScreenState extends State<GameScreen> {
 
   Widget _buildChip1() {
     return Container(
-      child: Center(
-        child: Text(
-          "100",
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+      child: InkWell(
+        child: Center(
+          child: Text(
+            "100",
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          ),
         ),
+        onTap: () {
+          setState(() {
+            int numberStash = int.parse(widget.playerStash);
+            if (numberStash >= 100) {
+              numberStash = numberStash - 100;
+              widget.playerStash = numberStash.toString();
+            }
+          });
+        },
       ),
       height: 40.0,
       width: 40.0,
@@ -256,11 +280,22 @@ class _GameScreenState extends State<GameScreen> {
 
   Widget _buildChip2() {
     return Container(
-      child: Center(
-        child: Text(
-          "All in!",
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+      child: InkWell(
+        child: Center(
+          child: Text(
+            "All in!",
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          ),
         ),
+        onTap: () {
+          setState(() {
+            int numberStash = int.parse(widget.playerStash);
+            if (numberStash > 1) {
+              numberStash = 0;
+              widget.playerStash = numberStash.toString();
+            }
+          });
+        },
       ),
       height: 40.0,
       width: 40.0,
