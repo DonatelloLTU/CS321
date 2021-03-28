@@ -96,6 +96,9 @@ class _GameTableState extends State<GameTable> {
                   '/' +
                   loss.toString())),
           ListTile(
+              title: Text(
+                  'Rules are simple, to get a card and give a card to opponent press on the deck in the middle of the screen. Opponent can receive card only when you are finished with your turn. Beat opponent by having higher score. Higher score does not mean that you can go to infinity. Your turn will end if you get above 21. GOOD LUCK!!!')),
+          ListTile(
             title: Text('Back ->'),
             onTap: () {
               Navigator.pop(context);
