@@ -18,6 +18,7 @@ class CardColumn extends StatefulWidget {
 }
 
 class _CardColumnState extends State<CardColumn> {
+  bool dealersTurn;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,36 +26,23 @@ class _CardColumnState extends State<CardColumn> {
       height: 10.0 * 15.0,
       width: 80,
       margin: EdgeInsets.all(0),
-      child: DragTarget<Map>(
-        builder: (context, listOne, listTwo) {
-          return Stack(
-            //alignment: AlignmentDirectional.bottomCenter,
-            children: widget.cards.map((card) {
-              int index = widget.cards.indexOf(card);
-              return TransformedCard(
-                playingCard: card,
-                transformIndex: index,
-                attachedCards: widget.cards.sublist(index, widget.cards.length),
-                columnIndex: widget.columnIndex,
-              );
-            }).toList(),
-          );
-        },
-        onWillAccept: (value) {
-          // If empty, accept
-          if (widget.cards.length == 0) {
-            return true;
-          }
-
-          return true;
-        },
-        onAccept: (value) {
-          widget.onCardsAdded(
-            value["cards"],
-            value["fromIndex"],
-          );
-        },
-      ),
+      child: DragTarget<Map>(builder: (context, listOne, listTwo) {
+        return Stack(
+          //alignment: AlignmentDirectional.bottomCenter,
+          children: widget.cards.map((card) {
+            int index = widget.cards.indexOf(card);
+            return TransformedCard(
+              playingCard: card,
+              transformIndex: index,
+              attachedCards: widget.cards.sublist(index, widget.cards.length),
+              columnIndex: widget.columnIndex,
+            );
+          }).toList(),
+        );
+      }, onMove: (value) {
+        dealersTurn = true;
+        return dealersTurn;
+      }),
     );
   }
 }

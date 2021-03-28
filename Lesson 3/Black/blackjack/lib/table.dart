@@ -19,6 +19,13 @@ class GameTable extends StatefulWidget {
   _GameTableState createState() => _GameTableState();
 }
 
+int totalPot = 0;
+bool betting = true;
+int getCard = 0;
+bool dealersTurn = false;
+int win = 0;
+int loss = 0;
+
 class _GameTableState extends State<GameTable> {
   //Navigator.pop(context);
 
@@ -27,12 +34,14 @@ class _GameTableState extends State<GameTable> {
   int count = 0;
   int dealersCount = 0;
   int gamesPlayed = 0;
+
   List<PlayingCard> cardDeckClosed = [];
-  List<PlayingCard> cardDeckOpened = []; //used cards
+  //List<PlayingCard> cardDeckOpened = []; //used cards
 
   @override
   void initState() {
     super.initState();
+
     _initialiseGame();
   }
 
@@ -40,6 +49,7 @@ class _GameTableState extends State<GameTable> {
   Widget build(BuildContext context) {
     int values, dealersValue;
     count = 0;
+
     for (int i = 0; i < cardColumn1.length; i++) {
       values = cardColumn1.elementAt(i).getValue();
       if (values > 10) {
@@ -76,8 +86,11 @@ class _GameTableState extends State<GameTable> {
             decoration: BoxDecoration(color: Colors.red),
           ),
           ListTile(title: Text('Hands played: ' + gamesPlayed.toString())),
-          ListTile(title: Text('Win/Loose ratio: ')),
-          ListTile(title: Text('Avg Score: ')),
+          ListTile(
+              title: Text('Win/Loose ratio: ' +
+                  win.toString() +
+                  '/' +
+                  loss.toString())),
           ListTile(
             title: Text('Back'),
             onTap: () {
@@ -130,7 +143,9 @@ class _GameTableState extends State<GameTable> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
+              Text('Pot: $totalPot'),
               _buildCardDeck(),
+              _deal(),
             ],
           ),
           Row(
@@ -163,8 +178,42 @@ class _GameTableState extends State<GameTable> {
               ),
             ],
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _swipeToPass(),
+            ],
+          )
         ],
       ),
+    );
+  }
+
+  Widget _swipeToPass() {
+    return Dismissible(
+      key: UniqueKey(),
+      child: Container(
+        child: InkWell(
+          child: Center(
+            child: Text(
+              "Swipe to pass",
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        height: 40.0,
+        width: 100.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.black),
+          borderRadius: BorderRadius.circular(50.0),
+        ),
+      ),
+      onDismissed: (direction) {
+        setState(() {
+          dealersTurn = true;
+        });
+      },
     );
   }
 
@@ -176,40 +225,46 @@ class _GameTableState extends State<GameTable> {
           InkWell(
             child: cardDeckClosed.isNotEmpty
                 ? Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: TransformedCard(
-                playingCard: cardDeckClosed.last,
-              ),
-            )
+                    padding: const EdgeInsets.all(4.0),
+                    child: TransformedCard(
+                      playingCard: cardDeckClosed.last,
+                    ),
+                  )
                 : Opacity(
-              opacity: 0.4,
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: TransformedCard(
-                  playingCard: PlayingCard(
-                    cardSuit: CardSuit.diamonds,
-                    cardType: CardType.five,
+                    opacity: 0.4,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: TransformedCard(
+                        playingCard: PlayingCard(
+                          cardSuit: CardSuit.diamonds,
+                          cardType: CardType.five,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
             onTap: () {
               setState(() {
-                if (count < 22) {
-                  if (cardDeckClosed.isEmpty) {
-                    //addsCardsFrom the burnPile
-                    cardDeckClosed.addAll(cardDeckOpened.map((card) {
-                      return card
-                        ..opened = false
-                        ..faceUp = false;
-                    }));
-                    cardDeckOpened.clear();
-                  } else {
+                betting = false;
+                if (totalPot == 0) {
+                  _makeBet();
+                }
+                _handleWin();
+                if (totalPot != 0) {
+                  if (count < 22 && dealersTurn != true) {
                     cardColumn1.add(
                       cardDeckClosed.removeLast()
                         ..faceUp = true
                         ..opened = true,
                     );
+                  }
+                  if (dealersTurn == true) {
+                    if (dealersCount < 17 && dealersCount < count) {
+                      cardColumn2.add(
+                        cardDeckClosed.removeLast()
+                          ..faceUp = true
+                          ..opened = true,
+                      );
+                    }
                   }
                 }
               });
@@ -232,9 +287,14 @@ class _GameTableState extends State<GameTable> {
         onTap: () {
           setState(() {
             int numberStash = int.parse(widget.playerStash);
-            if (numberStash >= 10) {
-              numberStash = numberStash - 10;
-              widget.playerStash = numberStash.toString();
+            if (betting == true) {
+              if (numberStash >= 10) {
+                numberStash = numberStash - 10;
+                widget.playerStash = numberStash.toString();
+                totalPot = totalPot + 20;
+              }
+            } else {
+              _noBet();
             }
           });
         },
@@ -261,9 +321,14 @@ class _GameTableState extends State<GameTable> {
         onTap: () {
           setState(() {
             int numberStash = int.parse(widget.playerStash);
-            if (numberStash >= 100) {
-              numberStash = numberStash - 100;
-              widget.playerStash = numberStash.toString();
+            if (betting == true) {
+              if (numberStash >= 100) {
+                numberStash = numberStash - 100;
+                widget.playerStash = numberStash.toString();
+                totalPot = totalPot + 100;
+              }
+            } else {
+              _noBet();
             }
           });
         },
@@ -290,9 +355,14 @@ class _GameTableState extends State<GameTable> {
         onTap: () {
           setState(() {
             int numberStash = int.parse(widget.playerStash);
-            if (numberStash > 1) {
-              numberStash = 0;
-              widget.playerStash = numberStash.toString();
+            if (betting == true) {
+              if (numberStash > 1) {
+                totalPot = totalPot + (numberStash * 2);
+                numberStash = 0;
+                widget.playerStash = numberStash.toString();
+              }
+            } else {
+              _noBet();
             }
           });
         },
@@ -309,6 +379,8 @@ class _GameTableState extends State<GameTable> {
 
   // Initialise a new game
   void _initialiseGame() {
+    dealersTurn = false;
+    betting = true;
     gamesPlayed++;
     count = 0;
 
@@ -317,7 +389,7 @@ class _GameTableState extends State<GameTable> {
 
     // Stores the card deck
     cardDeckClosed = [];
-    cardDeckOpened = []; //used cards
+    //cardDeckOpened = []; //used cards
 
     List<PlayingCard> allCards = [];
 
@@ -334,31 +406,32 @@ class _GameTableState extends State<GameTable> {
 
     Random random = Random();
 
-    // Add cards to columns and remaining to deck
-    for (int i = 1; i < 6; i++) {
-      int randomNumber = random.nextInt(allCards.length);
+    if (totalPot != 0) {
+      for (int i = 1; i < 6; i++) {
+        int randomNumber = random.nextInt(allCards.length);
 
-      if (i > 0 && i < 3) {
-        PlayingCard card = allCards[randomNumber];
-        cardColumn1.add(
-          card
-            ..opened = true
-            ..faceUp = true,
-        );
-
-        allCards.removeAt(randomNumber);
-      } else if (i > 3 && i < 6) {
-        if (i == 5) {
+        if (i > 0 && i < 3) {
           PlayingCard card = allCards[randomNumber];
-          cardColumn2.add(
+          cardColumn1.add(
             card
               ..opened = true
               ..faceUp = true,
           );
-        } else {
-          cardColumn2.add(allCards[randomNumber]);
+
+          allCards.removeAt(randomNumber);
+        } else if (i > 3 && i < 6) {
+          if (i == 5) {
+            PlayingCard card = allCards[randomNumber];
+            cardColumn2.add(
+              card
+                ..opened = true
+                ..faceUp = true,
+            );
+          } else {
+            cardColumn2.add(allCards[randomNumber]);
+          }
+          allCards.removeAt(randomNumber);
         }
-        allCards.removeAt(randomNumber);
       }
     }
     allCards.shuffle();
@@ -369,7 +442,7 @@ class _GameTableState extends State<GameTable> {
   void _refreshList(int index) {
     setState(() {
       if (_getListFromIndex(index).length != 0) {
-        _getListFromIndex(index)[_getListFromIndex(index).length - 1]
+        _getListFromIndex(index)[_getListFromIndex(index).length]
           ..opened = true
           ..faceUp = true;
       }
@@ -377,7 +450,7 @@ class _GameTableState extends State<GameTable> {
   }
 
   void _handleWin() {
-    if (count > dealersCount) {
+    if ((count == 21 && count != dealersCount) || dealersCount > 21) {
       showDialog(
         context: context,
         builder: (context) {
@@ -387,6 +460,33 @@ class _GameTableState extends State<GameTable> {
             actions: <Widget>[
               FlatButton(
                 onPressed: () {
+                  int stashing = int.parse(widget.playerStash);
+                  stashing = stashing + totalPot;
+                  widget.playerStash = stashing.toString();
+                  totalPot = 0;
+                  win = win + 1;
+                  _initialiseGame();
+                  Navigator.pop(context);
+                },
+                child: Text("Play again"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+    if (count > 21) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Burn!"),
+            content: Text("You Loose!"),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  totalPot = 0;
+                  loss = loss + 1;
                   _initialiseGame();
                   Navigator.pop(context);
                 },
@@ -399,10 +499,79 @@ class _GameTableState extends State<GameTable> {
     }
   }
 
+  void _makeBet() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Big no no!"),
+          content: Text("Make a bet!"),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("Back"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _noBet() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Big no no!"),
+          content: Text("You cannot bet while in game!"),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("Back"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _deal() {
+    return Container(
+      child: InkWell(
+        child: Center(
+          child: Text(
+            "Deal",
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+          ),
+        ),
+        onTap: () {
+          setState(() {
+            if (totalPot != 0) {
+              _initialiseGame();
+            } else {
+              _makeBet();
+            }
+          });
+        },
+      ),
+      height: 40.0,
+      width: 40.0,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.black),
+        borderRadius: BorderRadius.circular(50.0),
+      ),
+    );
+  }
+
   List<PlayingCard> _getListFromIndex(int index) {
     switch (index) {
       case 0:
-        return cardDeckOpened;
+      //return cardDeckOpened;
       case 1:
         return cardColumn1;
       case 2:
