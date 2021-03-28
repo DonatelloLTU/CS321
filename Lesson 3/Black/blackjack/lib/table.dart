@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:blackjack/card_row.dart';
+import 'package:blackjack/main.dart';
 import 'package:blackjack/move_card.dart';
 import 'package:blackjack/playing_card.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,6 +26,9 @@ int getCard = 0;
 bool dealersTurn = false;
 int win = 0;
 int loss = 0;
+bool _visible = false;
+String dealersPoints = ' ';
+//bool showPoints = false;
 
 class _GameTableState extends State<GameTable> {
   //Navigator.pop(context);
@@ -92,7 +96,7 @@ class _GameTableState extends State<GameTable> {
                   '/' +
                   loss.toString())),
           ListTile(
-            title: Text('Back'),
+            title: Text('Back ->'),
             onTap: () {
               Navigator.pop(context);
             },
@@ -133,7 +137,7 @@ class _GameTableState extends State<GameTable> {
                     int length = _getListFromIndex(index).length;
                     _getListFromIndex(index)
                         .removeRange(length - cards.length, length);
-                    //_refreshList(index);
+                    _refreshList(index);
                   });
                 },
                 columnIndex: 2,
@@ -180,9 +184,7 @@ class _GameTableState extends State<GameTable> {
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _swipeToPass(),
-            ],
+            children: [_swipeToPass()],
           )
         ],
       ),
@@ -190,30 +192,41 @@ class _GameTableState extends State<GameTable> {
   }
 
   Widget _swipeToPass() {
-    return Dismissible(
-      key: UniqueKey(),
-      child: Container(
-        child: InkWell(
-          child: Center(
-            child: Text(
-              "Swipe to pass",
-              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+    return Visibility(
+      visible: _visible,
+      child: Dismissible(
+        key: UniqueKey(),
+        child: Container(
+          child: InkWell(
+            child: Center(
+              child: Text(
+                "Swipe to pass",
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
+          height: 40.0,
+          width: 100.0,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.black),
+            borderRadius: BorderRadius.circular(50.0),
+          ),
         ),
-        height: 40.0,
-        width: 100.0,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(50.0),
-        ),
+        onDismissed: (direction) {
+          setState(() {
+            //showPoints = true;
+            // dealersPoints = dealersCount.toString();
+            _visible = !_visible;
+
+            PlayingCard card = cardColumn2.first;
+            card
+              ..faceUp = true
+              ..opened = true;
+            dealersTurn = true;
+          });
+        },
       ),
-      onDismissed: (direction) {
-        setState(() {
-          dealersTurn = true;
-        });
-      },
     );
   }
 
@@ -244,26 +257,34 @@ class _GameTableState extends State<GameTable> {
                   ),
             onTap: () {
               setState(() {
-                betting = false;
+                if (count > 21) {
+                  _handleWin();
+                }
                 if (totalPot == 0) {
                   _makeBet();
                 }
-                _handleWin();
-                if (totalPot != 0) {
-                  if (count < 22 && dealersTurn != true) {
-                    cardColumn1.add(
-                      cardDeckClosed.removeLast()
-                        ..faceUp = true
-                        ..opened = true,
-                    );
-                  }
-                  if (dealersTurn == true) {
-                    if (dealersCount < 17 && dealersCount < count) {
-                      cardColumn2.add(
+                //_handleWin();
+                if (betting == false) {
+                  if (totalPot != 0) {
+                    if (count < 22 && dealersTurn != true) {
+                      cardColumn1.add(
                         cardDeckClosed.removeLast()
                           ..faceUp = true
                           ..opened = true,
                       );
+                    }
+
+                    if (dealersTurn == true) {
+                      if (dealersCount > 16) {
+                        _handleWin();
+                      }
+                      if (dealersCount < 17 && count < 22) {
+                        cardColumn2.add(
+                          cardDeckClosed.removeLast()
+                            ..faceUp = true
+                            ..opened = true,
+                        );
+                      }
                     }
                   }
                 }
@@ -287,7 +308,7 @@ class _GameTableState extends State<GameTable> {
         onTap: () {
           setState(() {
             int numberStash = int.parse(widget.playerStash);
-            if (betting == true) {
+            if (betting == true || totalPot == 0) {
               if (numberStash >= 10) {
                 numberStash = numberStash - 10;
                 widget.playerStash = numberStash.toString();
@@ -321,11 +342,11 @@ class _GameTableState extends State<GameTable> {
         onTap: () {
           setState(() {
             int numberStash = int.parse(widget.playerStash);
-            if (betting == true) {
+            if (betting == true || totalPot == 0) {
               if (numberStash >= 100) {
                 numberStash = numberStash - 100;
                 widget.playerStash = numberStash.toString();
-                totalPot = totalPot + 100;
+                totalPot = totalPot + 200;
               }
             } else {
               _noBet();
@@ -355,7 +376,7 @@ class _GameTableState extends State<GameTable> {
         onTap: () {
           setState(() {
             int numberStash = int.parse(widget.playerStash);
-            if (betting == true) {
+            if (betting == true || totalPot == 0) {
               if (numberStash > 1) {
                 totalPot = totalPot + (numberStash * 2);
                 numberStash = 0;
@@ -379,8 +400,9 @@ class _GameTableState extends State<GameTable> {
 
   // Initialise a new game
   void _initialiseGame() {
+    dealersPoints = " ";
     dealersTurn = false;
-    betting = true;
+
     gamesPlayed++;
     count = 0;
 
@@ -465,8 +487,11 @@ class _GameTableState extends State<GameTable> {
                   widget.playerStash = stashing.toString();
                   totalPot = 0;
                   win = win + 1;
+                  betting = true;
+
                   _initialiseGame();
                   Navigator.pop(context);
+                  _gameOver();
                 },
                 child: Text("Play again"),
               ),
@@ -475,7 +500,7 @@ class _GameTableState extends State<GameTable> {
         },
       );
     }
-    if (count > 21) {
+    if (count > 21 || (dealersCount > count && dealersCount < 22)) {
       showDialog(
         context: context,
         builder: (context) {
@@ -487,8 +512,11 @@ class _GameTableState extends State<GameTable> {
                 onPressed: () {
                   totalPot = 0;
                   loss = loss + 1;
+
                   _initialiseGame();
+                  betting = true;
                   Navigator.pop(context);
+                  _gameOver();
                 },
                 child: Text("Play again"),
               ),
@@ -497,6 +525,66 @@ class _GameTableState extends State<GameTable> {
         },
       );
     }
+    if (count < 22 && count == dealersCount) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Tie!"),
+            content: Text("Split the pot!"),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  int stashing = int.parse(widget.playerStash);
+                  stashing = (stashing + (totalPot / 2)) as int;
+                  widget.playerStash = stashing.toString();
+                  totalPot = 0;
+                  // loss = loss + 1;
+                  _initialiseGame();
+                  betting = true;
+                  Navigator.pop(context);
+                  _gameOver();
+                },
+                child: Text("Play again"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+    dealersPoints = '';
+  }
+
+  void _gameOver() {
+    int testStash = int.parse(widget.playerStash);
+    if (testStash == 0) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Game Over!"),
+            content: Text("You lost all your money!"),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _navigateToFirstScreen(context);
+                },
+                child: Text("Play again"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _navigateToFirstScreen(BuildContext context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MyApp(),
+        ));
   }
 
   void _makeBet() {
@@ -550,10 +638,14 @@ class _GameTableState extends State<GameTable> {
         ),
         onTap: () {
           setState(() {
-            if (totalPot != 0) {
-              _initialiseGame();
-            } else {
-              _makeBet();
+            _visible = true;
+            if (betting == true) {
+              if (totalPot != 0) {
+                betting = false;
+                _initialiseGame();
+              } else {
+                _makeBet();
+              }
             }
           });
         },
