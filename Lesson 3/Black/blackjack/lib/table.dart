@@ -131,7 +131,8 @@ class _GameTableState extends State<GameTable> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Text("Score: " + dealersCount.toString()),
+              Text(""),
+              Text(""),
               CardColumn(
                 cards: cardColumn2,
                 onCardsAdded: (cards, index) {
@@ -167,7 +168,7 @@ class _GameTableState extends State<GameTable> {
                 children: <Widget>[
                   Text('${widget.playerName}'),
                   Text('Stash: ${widget.playerStash}'),
-                  Text("Score: " + count.toString()),
+                  //Text("Score: " + count.toString()),
                 ],
               ),
               CardColumn(
@@ -475,30 +476,36 @@ class _GameTableState extends State<GameTable> {
   }
 
   void _handleWin() {
-    if ((count == 21 && count != dealersCount) || dealersCount > 21) {
+    if ((count == 21 && count != dealersCount) ||
+        dealersCount > 21 ||
+        dealersCount < count) {
       showDialog(
         context: context,
         builder: (context) {
-          return AlertDialog(
-            title: Text("Congratulations!"),
-            content: Text("You Win!"),
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () {
-                  int stashing = int.parse(widget.playerStash);
-                  stashing = stashing + totalPot;
-                  widget.playerStash = stashing.toString();
-                  totalPot = 0;
-                  win = win + 1;
-                  betting = true;
+          return AnimatedContainer(
+            duration: Duration(milliseconds: 2000),
+            curve: Curves.bounceIn,
+            child: AlertDialog(
+              title: Text("Congratulations!"),
+              content: Text("You Win!"),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    int stashing = int.parse(widget.playerStash);
+                    stashing = stashing + totalPot;
+                    widget.playerStash = stashing.toString();
+                    totalPot = 0;
+                    win = win + 1;
+                    betting = true;
 
-                  _initialiseGame();
-                  Navigator.pop(context);
-                  _gameOver();
-                },
-                child: Text("Play again"),
-              ),
-            ],
+                    _initialiseGame();
+                    Navigator.pop(context);
+                    _gameOver();
+                  },
+                  child: Text("Play again"),
+                ),
+              ],
+            ),
           );
         },
       );
@@ -538,9 +545,9 @@ class _GameTableState extends State<GameTable> {
             actions: <Widget>[
               FlatButton(
                 onPressed: () {
-                  int stashing = int.parse(widget.playerStash);
-                  stashing = (stashing + (totalPot / 2)) as int;
-                  widget.playerStash = stashing.toString();
+                  //int stashing = int.parse(widget.playerStash);
+                  //stashing = stashing + (totalPot / 2);
+                  //widget.playerStash = stashing.toString();
                   totalPot = 0;
                   // loss = loss + 1;
                   _initialiseGame();

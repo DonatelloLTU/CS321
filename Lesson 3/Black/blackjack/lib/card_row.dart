@@ -18,13 +18,24 @@ class CardColumn extends StatefulWidget {
 }
 
 class _CardColumnState extends State<CardColumn> {
+  double _height = 10.0 * 15.0;
+  double _width = 80;
+
+  double _updateState() {
+    setState(() {
+      _width = 40;
+      _height = 5.0 * 7.0;
+    });
+  }
+
   bool dealersTurn;
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 2000),
       alignment: Alignment.topCenter,
-      height: 10.0 * 15.0,
-      width: 80,
+      height: _height,
+      width: _width,
       margin: EdgeInsets.all(0),
       child: DragTarget<Map>(builder: (context, listOne, listTwo) {
         return Stack(
@@ -40,8 +51,9 @@ class _CardColumnState extends State<CardColumn> {
           }).toList(),
         );
       }, onMove: (value) {
-        dealersTurn = true;
-        return dealersTurn;
+        //_updateState();
+        //dealersTurn = true;
+        //return dealersTurn;
       }),
     );
   }

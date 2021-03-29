@@ -58,7 +58,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               }
               name = value;
 
-              return name;
+              return null;
             },
           ),
           TextFormField(
@@ -66,21 +66,23 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               hintText: 'Enter ammount',
             ),
             validator: (value1) {
-              if (value1.isEmpty) {
-                return 'Please enter ammount';
+              if (value1.isEmpty ||
+                  !RegExp(r'^-?(([0-9]*)|(([0-9]*)\.([0-9]*)))$')
+                      .hasMatch(value1)) {
+                return 'Please enter ammount in numbers';
               }
               stash = value1;
 
-              return stash;
+              //return stash;
+              return null;
             },
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: ElevatedButton(
               onPressed: () {
-                _navigateToSecondScreen(context);
                 if (_formKey.currentState.validate()) {
-                  // Process data.
+                  _navigateToSecondScreen(context);
                 }
               },
               child: Text('Submit'),
