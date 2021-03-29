@@ -2,8 +2,12 @@ import 'package:blackjack/card_row.dart';
 import 'package:blackjack/playing_card.dart';
 import 'package:flutter/material.dart';
 
-// TransformedCard makes the card draggable and translates it according to
-// position in the stack.
+///
+///TransformedCard allows for card to be draggable.
+///@author: Donatas Vasauskas
+///@version: 2021-3-29.01
+///Reference: https://medium.com/flutter-community/creating-solitaire-in-flutter-946c34ef053c
+
 class TransformedCard extends StatefulWidget {
   final PlayingCard playingCard;
   final double transformDistance;
@@ -37,6 +41,9 @@ class _TransformedCardState extends State<TransformedCard> {
     );
   }
 
+  ///
+  /// Creates card with face down
+  ///
   Widget _buildCard() {
     return !widget.playingCard.faceUp
         ? Container(
@@ -63,6 +70,9 @@ class _TransformedCardState extends State<TransformedCard> {
           );
   }
 
+  ///
+  /// Create face up card with this method.
+  ///
   Widget _buildFaceUpCard() {
     return Material(
       color: Colors.transparent,
@@ -123,13 +133,9 @@ class _TransformedCardState extends State<TransformedCard> {
     );
   }
 
-  void rule() {
-    bool playing = true;
-    while (playing == true) {
-      int value;
-    }
-  }
-
+  ///
+  /// Card values
+  ///
   String _cardTypeToString() {
     switch (widget.playingCard.cardType) {
       case CardType.one:
@@ -163,6 +169,9 @@ class _TransformedCardState extends State<TransformedCard> {
     }
   }
 
+  ///
+  /// Images for the card suit
+  ///
   Image _suitToImage() {
     switch (widget.playingCard.cardSuit) {
       case CardSuit.hearts:

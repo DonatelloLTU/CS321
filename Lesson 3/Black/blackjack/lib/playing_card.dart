@@ -1,3 +1,8 @@
+///
+///@author: Donatas Vasauskas
+///@version: 2021-3-29.01
+///Reference: https://medium.com/flutter-community/creating-solitaire-in-flutter-946c34ef053c
+
 enum CardSuit {
   spades,
   hearts,
@@ -21,7 +26,7 @@ enum CardType {
   king
 }
 
-// Simple playing card model
+/// Simple playing card model
 class PlayingCard {
   CardSuit cardSuit;
   CardType cardType;
@@ -36,12 +41,6 @@ class PlayingCard {
   });
 
   int getValue() {
-    if (cardType.index > 9) {
-      return 10;
-    } else if (cardType.index == 0) {
-      return 11;
-    } else {
-      return cardType.index + 1;
-    }
+    return cardType.index + 1;
   }
 }

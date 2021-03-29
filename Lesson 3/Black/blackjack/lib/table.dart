@@ -6,7 +6,13 @@ import 'package:blackjack/move_card.dart';
 import 'package:blackjack/playing_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:random_color/random_color.dart';
 
+///
+///GameTable class responsible for the UI
+///@author: Donatas Vasauskas
+///@version: 2021-3-29.01
+///Reference: https://medium.com/flutter-community/creating-solitaire-in-flutter-946c34ef053c
 class GameTable extends StatefulWidget {
   String playerName;
   String playerStash;
@@ -30,6 +36,8 @@ bool _visible = false;
 String dealersPoints = ' ';
 //bool showPoints = false;
 
+///
+/// State class of GameTable
 class _GameTableState extends State<GameTable> {
   //Navigator.pop(context);
 
@@ -59,6 +67,13 @@ class _GameTableState extends State<GameTable> {
       if (values > 10) {
         values = 10;
       }
+      if (values < 2 && count < 22) {
+        values = 11;
+      }
+      if (count > 21 && values < 2) {
+        values = 1;
+      }
+
       count = count + values;
     }
 
@@ -68,9 +83,18 @@ class _GameTableState extends State<GameTable> {
       if (dealersValue > 10) {
         dealersValue = 10;
       }
+      if (values < 2) {
+        values = 11;
+        if (count > 21) {
+          values = 1;
+        }
+      }
       dealersCount = dealersCount + dealersValue;
     }
 
+    ///
+    /// Main App style build for the game
+    ///
     return Scaffold(
       backgroundColor: Colors.green,
       drawer: Drawer(
@@ -168,7 +192,7 @@ class _GameTableState extends State<GameTable> {
                 children: <Widget>[
                   Text('${widget.playerName}'),
                   Text('Stash: ${widget.playerStash}'),
-                  //Text("Score: " + count.toString()),
+                  Text("Score: " + count.toString()),
                 ],
               ),
               CardColumn(
@@ -195,12 +219,22 @@ class _GameTableState extends State<GameTable> {
     );
   }
 
+  //Color _color = Colors.white;
+  Color _colors = Colors.white;
+  RandomColor _randomColor = RandomColor();
+  Color _updateColor() {
+    setState(() {
+      _colors = _randomColor.randomColor();
+    });
+  }
+
   Widget _swipeToPass() {
     return Visibility(
       visible: _visible,
       child: Dismissible(
         key: UniqueKey(),
-        child: Container(
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 5000),
           child: InkWell(
             child: Center(
               child: Text(
@@ -212,13 +246,14 @@ class _GameTableState extends State<GameTable> {
           height: 40.0,
           width: 100.0,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: _colors,
             border: Border.all(color: Colors.black),
             borderRadius: BorderRadius.circular(50.0),
           ),
         ),
         onDismissed: (direction) {
           setState(() {
+            _updateColor();
             //showPoints = true;
             // dealersPoints = dealersCount.toString();
             _visible = !_visible;
@@ -478,7 +513,7 @@ class _GameTableState extends State<GameTable> {
   void _handleWin() {
     if ((count == 21 && count != dealersCount) ||
         dealersCount > 21 ||
-        dealersCount < count) {
+        (dealersCount < count && count < 22)) {
       showDialog(
         context: context,
         builder: (context) {

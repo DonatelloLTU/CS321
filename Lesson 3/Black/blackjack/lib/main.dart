@@ -6,6 +6,11 @@ import 'player.dart';
 
 void main() => runApp(MyApp());
 
+///
+///MyApp class main class
+///@author: Donatas Vasauskas
+///@version: 2021-3-29.01
+
 class MyApp extends StatelessWidget {
   static const String _title = 'Sign In';
 
