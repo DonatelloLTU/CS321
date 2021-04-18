@@ -5,21 +5,26 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import 'WeatherHistory/daily.dart';
 import 'countries/country_state_city_picker.dart';
 
+Daily d = Daily();
 void main() => runApp(MaterialApp(
       title: "Weather App",
       home: Home(),
     ));
 
 class Home extends StatefulWidget {
+  Home({Key key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
-    return _HomeState();
+    return HomeState();
   }
 }
 
-class _HomeState extends State<Home> {
+class HomeState extends State<Home> {
+  final _formKey = GlobalKey<FormState>();
   var temp;
   var description;
   var currently;
@@ -30,10 +35,18 @@ class _HomeState extends State<Home> {
   String cityValue;
   String countryValue;
   String stateValue;
+  String dayOne = '';
+  var one;
+  var two;
+  var three;
+  var four;
+  var five;
 
   Future getWeather() async {
     http.Response response = await http.get(
-        "http://api.openweathermap.org/data/2.5/weather?q=Ravenswood&units=imperial&appid=f3594c0189b761d6bb32d738b3cbccf8");
+        "http://api.openweathermap.org/data/2.5/weather?q=" +
+            selectedUser.name +
+            "&units=imperial&appid=f3594c0189b761d6bb32d738b3cbccf8");
     var results = jsonDecode(response.body);
     setState(() {
       this.temp = results['main']['temp'];
@@ -44,36 +57,78 @@ class _HomeState extends State<Home> {
     });
   }
 
+  Future getLatLon() async {
+    http.Response response = await http.get(
+        "http://api.openweathermap.org/geo/1.0/direct?q=" +
+            selectedUser.name +
+            "&limit=5&appid=f3594c0189b761d6bb32d738b3cbccf8");
+    var results = jsonDecode(response.body);
+    setState(() {
+      this.lat = results['lat'];
+      this.lon = results['lon'];
+    });
+  }
+
+  Future getDaily() async {
+    http.Response response = await http.get(
+        "https://api.openweathermap.org/data/2.5/onecall?lat=" +
+            lat +
+            "&lon=" +
+            lon +
+            "&exclude=current,minutely,daily,alerts&appid=f3594c0189b761d6bb32d738b3cbccf8");
+    var results = jsonDecode(response.body);
+
+    this.one = results['timezone_offset'];
+    this.two = results['hourly'][0]['temp'];
+    this.three = results['hourly'][2]['temp'];
+    this.four = results['hourly'][3]['temp'];
+    this.five = results['hourly'][4]['temp'];
+  }
+
+  String sendLat() {
+    return lat;
+  }
+
+  String sendLon() {
+    return lon;
+  }
+
   Item selectedUser;
-  List<Item> users = <Item>[
-    const Item(
-        'Kaunas',
-        Icon(
-          Icons.location_city,
-          color: const Color(0xFFFFCA28),
-        )),
-    const Item(
-        'London',
-        Icon(
-          Icons.location_city,
-          color: const Color(0xFFFFCA28),
-        )),
-    const Item(
-        'Ravenswood',
-        Icon(
-          Icons.location_city,
-          color: const Color(0xFFFFCA28),
-        )),
-    const Item(
-        'Oslo',
-        Icon(
-          Icons.location_city,
-          color: const Color(0xFFFFCA28),
-        )),
-  ];
+  List<Item> users = <Item>[];
+
+  void addCityStateToList() {
+    setState(() {
+      if (cityValue != null) {
+        users.insert(
+            0,
+            Item(
+                cityValue,
+                Icon(
+                  Icons.location_city,
+                  color: const Color(0xFFFFCA28),
+                )));
+      }
+    });
+  }
+
+  void addInitialCityStateToList() {
+    setState(() {
+      users.insert(
+        0,
+        Item(
+            'Parkersburg',
+            Icon(
+              Icons.location_city,
+              color: const Color(0xFFFFCA28),
+            )),
+      );
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    addInitialCityStateToList();
     this.getWeather();
   }
 
@@ -123,15 +178,11 @@ class _HomeState extends State<Home> {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {},
-            ),
-            ListTile(
-              title: Text('Back'),
-              onTap: () {
-                Navigator.pop(context);
+              icon: Icon(Icons.add),
+              onPressed: () {
+                addCityStateToList();
               },
-            )
+            ),
           ]),
         ),
         appBar: AppBar(
@@ -179,6 +230,8 @@ class _HomeState extends State<Home> {
                 onChanged: (Item Value) {
                   setState(() {
                     selectedUser = Value;
+                    this.getWeather();
+                    this.getDaily();
                   });
                 },
                 items: users.map((Item user) {
@@ -198,6 +251,45 @@ class _HomeState extends State<Home> {
                     ),
                   );
                 }).toList(),
+              ),
+              SizedBox(
+                height: 250,
+                child: Container(
+                    child: Expanded(
+                        child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: ListView(
+                    children: <Widget>[
+                      ListTile(
+                        leading: FaIcon(FontAwesomeIcons.thermometerHalf),
+                        title: Text("Temperature"),
+                        trailing: Text(temp != null
+                            ? temp.toString() + "\u00B0"
+                            : "Loading"),
+                      ),
+                      ListTile(
+                        leading: FaIcon(FontAwesomeIcons.cloud),
+                        title: Text("Weather"),
+                        trailing: Text(description != null
+                            ? description.toString()
+                            : "Loading"),
+                      ),
+                      ListTile(
+                        leading: FaIcon(FontAwesomeIcons.sun),
+                        title: Text("Humidity"),
+                        trailing: Text(
+                            humidity != null ? humidity.toString() : "Loading"),
+                      ),
+                      ListTile(
+                        leading: FaIcon(FontAwesomeIcons.wind),
+                        title: Text("Wind Speed"),
+                        trailing: Text(windSpeed != null
+                            ? windSpeed.toString() + " mph"
+                            : "Loading"),
+                      )
+                    ],
+                  ),
+                ))),
               ),
               DefaultTabController(
                   length: 2, // length of tabs
@@ -223,43 +315,31 @@ class _HomeState extends State<Home> {
                                         color: Colors.grey, width: 0.5))),
                             child: TabBarView(children: <Widget>[
                               Container(
-                                  child: Expanded(
-                                      child: Padding(
-                                padding: EdgeInsets.all(20.0),
+                                margin: EdgeInsets.symmetric(vertical: 20.0),
+                                height: 200.0,
                                 child: ListView(
+                                  scrollDirection: Axis.horizontal,
                                   children: <Widget>[
-                                    ListTile(
-                                      leading: FaIcon(
-                                          FontAwesomeIcons.thermometerHalf),
-                                      title: Text("Temperature"),
-                                      trailing: Text(temp != null
-                                          ? temp.toString() + "\u00B0"
-                                          : "Loading"),
+                                    Container(),
+                                    Container(
+                                      width: 160.0,
+                                      color: Colors.blue,
                                     ),
-                                    ListTile(
-                                      leading: FaIcon(FontAwesomeIcons.cloud),
-                                      title: Text("Weather"),
-                                      trailing: Text(description != null
-                                          ? description.toString()
-                                          : "Loading"),
+                                    Container(
+                                      width: 160.0,
+                                      color: Colors.green,
                                     ),
-                                    ListTile(
-                                      leading: FaIcon(FontAwesomeIcons.sun),
-                                      title: Text("Humidity"),
-                                      trailing: Text(humidity != null
-                                          ? humidity.toString()
-                                          : "Loading"),
+                                    Container(
+                                      width: 160.0,
+                                      color: Colors.yellow,
                                     ),
-                                    ListTile(
-                                      leading: FaIcon(FontAwesomeIcons.wind),
-                                      title: Text("Wind Speed"),
-                                      trailing: Text(windSpeed != null
-                                          ? windSpeed.toString()
-                                          : "Loading"),
-                                    )
+                                    Container(
+                                      width: 160.0,
+                                      color: Colors.orange,
+                                    ),
                                   ],
                                 ),
-                              ))),
+                              ),
                               Container(
                                 child: Center(
                                   child: Text('Daily table summary',
