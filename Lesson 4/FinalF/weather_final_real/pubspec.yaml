@@ -34,6 +34,8 @@ dependencies:
   time_formatter:
   intl:
   bezier_chart: ^1.0.16
+  google_mobile_ads: 0.11.0
+  provider:
 
 dev_dependencies:
   flutter_test:

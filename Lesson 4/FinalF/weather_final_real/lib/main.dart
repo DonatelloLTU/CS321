@@ -3,16 +3,28 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import 'ad_state.dart';
 import 'bezier-chart/lib/bezier_chart.dart';
 import 'countries/country_state_city_picker.dart';
 
-void main() => runApp(MaterialApp(
-      title: "Weather App",
-      home: Home(),
-    ));
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  final initFuture = MobileAds.instance.initialize();
+  final adState = AdState(initFuture);
+  runApp(
+    Provider.value(
+        value: adState,
+        builder: (context, child) => MaterialApp(
+              title: "Weather App",
+              home: Home(),
+            )),
+  );
+}
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -24,6 +36,24 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
+  BannerAd banner;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final adState = Provider.of<AdState>(context);
+    adState.initialization.then((status) {
+      setState(() {
+        banner = BannerAd(
+          adUnitId: adState.bannerAdUnitId,
+          size: AdSize.banner,
+          request: AdRequest(),
+          listener: adState.adListener,
+        )..load();
+      });
+    });
+  }
+
   final _formKey = GlobalKey<FormState>();
   var temp;
   var description;
@@ -531,18 +561,16 @@ class HomeState extends State<Home> {
             // horizontal).
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              SizedBox(
-                height: 50,
-                child: Placeholder(),
-                // child: AdmobBanner(
-                //   adUnitId: null,
-                //   adSize: AdmobBannerSize.BANNER,
-                // ),
-              ),
-              // AdmobBanner(
-              //   adUnitId: null,
-              //   adSize: AdmobBannerSize.BANNER,
-              // ),
+              if (banner == null)
+                SizedBox(
+                  height: 50,
+                  child: Placeholder(),
+                )
+              else
+                Container(
+                  height: 50,
+                  child: AdWidget(ad: banner),
+                ),
               DropdownButton<Item>(
                 hint: Text("Select item"),
                 value: selectedUser,
@@ -616,7 +644,7 @@ class HomeState extends State<Home> {
                         leading: FaIcon(FontAwesomeIcons.wind),
                         title: Text("Wind Speed"),
                         trailing: Text(windSpeed != null
-                            ? windSpeed.toString() + " mph"
+                            ? windSpeed.toString()
                             : "Loading"),
                       )
                     ],
@@ -724,8 +752,7 @@ class HomeState extends State<Home> {
                                                   FaIcon(FontAwesomeIcons.wind),
                                               title: Text("Wind speed:"),
                                               trailing: Text(windSpeed1 != null
-                                                  ? windSpeed1.toString() +
-                                                      " mph"
+                                                  ? windSpeed1.toString()
                                                   : "Loading"),
                                             )
                                           ],
@@ -804,8 +831,7 @@ class HomeState extends State<Home> {
                                                   FaIcon(FontAwesomeIcons.wind),
                                               title: Text("Wind speed:"),
                                               trailing: Text(windSpeed2 != null
-                                                  ? windSpeed2.toString() +
-                                                      " mph"
+                                                  ? windSpeed2.toString()
                                                   : "Loading"),
                                             )
                                           ],
@@ -884,8 +910,7 @@ class HomeState extends State<Home> {
                                                   FaIcon(FontAwesomeIcons.wind),
                                               title: Text("Wind speed:"),
                                               trailing: Text(windSpeed3 != null
-                                                  ? windSpeed3.toString() +
-                                                      " mph"
+                                                  ? windSpeed3.toString()
                                                   : "Loading"),
                                             )
                                           ],
@@ -964,8 +989,7 @@ class HomeState extends State<Home> {
                                                   FaIcon(FontAwesomeIcons.wind),
                                               title: Text("Wind speed:"),
                                               trailing: Text(windSpeed4 != null
-                                                  ? windSpeed4.toString() +
-                                                      " mph"
+                                                  ? windSpeed4.toString()
                                                   : "Loading"),
                                             )
                                           ],
@@ -1044,8 +1068,7 @@ class HomeState extends State<Home> {
                                                   FaIcon(FontAwesomeIcons.wind),
                                               title: Text("Wind speed:"),
                                               trailing: Text(windSpeed5 != null
-                                                  ? windSpeed5.toString() +
-                                                      " mph"
+                                                  ? windSpeed5.toString()
                                                   : "Loading"),
                                             )
                                           ],
@@ -1140,11 +1163,10 @@ class HomeState extends State<Home> {
                                               leading:
                                                   FaIcon(FontAwesomeIcons.wind),
                                               title: Text("Wind speed:"),
-                                              trailing: Text(windSpeed1Day !=
-                                                      null
-                                                  ? windSpeed1Day.toString() +
-                                                      " mph"
-                                                  : "Loading"),
+                                              trailing: Text(
+                                                  windSpeed1Day != null
+                                                      ? windSpeed1Day.toString()
+                                                      : "Loading"),
                                             )
                                           ],
                                         ),
@@ -1229,11 +1251,10 @@ class HomeState extends State<Home> {
                                               leading:
                                                   FaIcon(FontAwesomeIcons.wind),
                                               title: Text("Wind speed:"),
-                                              trailing: Text(windSpeed2Day !=
-                                                      null
-                                                  ? windSpeed2Day.toString() +
-                                                      " mph"
-                                                  : "Loading"),
+                                              trailing: Text(
+                                                  windSpeed2Day != null
+                                                      ? windSpeed2Day.toString()
+                                                      : "Loading"),
                                             )
                                           ],
                                         ),
@@ -1318,11 +1339,10 @@ class HomeState extends State<Home> {
                                               leading:
                                                   FaIcon(FontAwesomeIcons.wind),
                                               title: Text("Wind speed:"),
-                                              trailing: Text(windSpeed3Day !=
-                                                      null
-                                                  ? windSpeed3Day.toString() +
-                                                      " mph"
-                                                  : "Loading"),
+                                              trailing: Text(
+                                                  windSpeed3Day != null
+                                                      ? windSpeed3Day.toString()
+                                                      : "Loading"),
                                             )
                                           ],
                                         ),
@@ -1407,11 +1427,10 @@ class HomeState extends State<Home> {
                                               leading:
                                                   FaIcon(FontAwesomeIcons.wind),
                                               title: Text("Wind speed:"),
-                                              trailing: Text(windSpeed4Day !=
-                                                      null
-                                                  ? windSpeed4Day.toString() +
-                                                      " mph"
-                                                  : "Loading"),
+                                              trailing: Text(
+                                                  windSpeed4Day != null
+                                                      ? windSpeed4Day.toString()
+                                                      : "Loading"),
                                             )
                                           ],
                                         ),
@@ -1496,11 +1515,10 @@ class HomeState extends State<Home> {
                                               leading:
                                                   FaIcon(FontAwesomeIcons.wind),
                                               title: Text("Wind speed:"),
-                                              trailing: Text(windSpeed5Day !=
-                                                      null
-                                                  ? windSpeed5Day.toString() +
-                                                      " mph"
-                                                  : "Loading"),
+                                              trailing: Text(
+                                                  windSpeed5Day != null
+                                                      ? windSpeed5Day.toString()
+                                                      : "Loading"),
                                             )
                                           ],
                                         ),
