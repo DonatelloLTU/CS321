@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+import 'bezier-chart/lib/bezier_chart.dart';
 import 'countries/country_state_city_picker.dart';
 
 void main() => runApp(MaterialApp(
@@ -179,6 +180,26 @@ class HomeState extends State<Home> {
   var nextNew;
   String units;
 
+  double chartDay1Double = 0;
+
+  double chartDay2Double = 0;
+
+  double chartDay3Double = 0;
+
+  double chartDay4Double = 0;
+
+  double chartDay5Double = 0;
+
+  double chartH1Double = 0;
+
+  double chartH2Double = 0;
+
+  double chartH3Double = 0;
+
+  double chartH4Double = 0;
+
+  double chartH5Double = 0;
+
   bool isSwitched = false;
 
   Future getWeather() async {
@@ -217,6 +238,7 @@ class HomeState extends State<Home> {
       this.year = DateFormat.y().format(dt);
       this.one = results1['hourly'][3]['temp'];
       dt1 = dt.add(new Duration(hours: 1));
+      chartDay1Double = double.parse(one.toString());
       formattedDt1 = DateFormat.Hms().format(dt1);
       this.feels1 = results1['hourly'][3]['feels_like'];
       this.description1 = results1['hourly'][3]['weather'][0]['description'];
@@ -230,6 +252,8 @@ class HomeState extends State<Home> {
       this.two = results1['hourly'][4]['temp'];
       dt2 = dt.add(new Duration(hours: 2));
       formattedDt2 = DateFormat.Hms().format(dt2);
+
+      chartDay2Double = double.parse(two.toString());
       this.feels2 = results1['hourly'][4]['feels_like'];
       this.description2 = results1['hourly'][4]['weather'][0]['description'];
       this.humidity2 = results1['hourly'][4]['humidity'];
@@ -242,6 +266,7 @@ class HomeState extends State<Home> {
       this.three = results1['hourly'][5]['temp'];
       dt3 = dt.add(new Duration(hours: 3));
       formattedDt3 = DateFormat.Hms().format(dt3);
+      chartDay3Double = double.parse(three.toString());
       this.feels3 = results1['hourly'][5]['feels_like'];
       this.description3 = results1['hourly'][5]['weather'][0]['description'];
       this.humidity3 = results1['hourly'][5]['humidity'];
@@ -254,6 +279,7 @@ class HomeState extends State<Home> {
       this.four = results1['hourly'][6]['temp'];
       dt4 = dt.add(new Duration(hours: 4));
       formattedDt4 = DateFormat.Hms().format(dt4);
+      chartDay4Double = double.parse(four.toString());
       this.feels4 = results1['hourly'][6]['feels_like'];
       this.description4 = results1['hourly'][6]['weather'][0]['description'];
       this.humidity4 = results1['hourly'][6]['humidity'];
@@ -266,6 +292,7 @@ class HomeState extends State<Home> {
       this.five = results1['hourly'][7]['temp'];
       dt5 = dt.add(new Duration(hours: 5));
       formattedDt5 = DateFormat.Hms().format(dt5);
+      chartDay5Double = double.parse(five.toString());
       this.feels5 = results1['hourly'][7]['feels_like'];
       this.description5 = results1['hourly'][7]['weather'][0]['description'];
       this.humidity5 = results1['hourly'][7]['humidity'];
@@ -273,17 +300,6 @@ class HomeState extends State<Home> {
       this.cloudCoverage5 = results1['hourly'][7]['clouds'];
       this.visibility5 = results1['hourly'][7]['visibility'];
       this.windSpeed5 = results1['hourly'][7]['wind_speed'];
-
-      this.one = results1['hourly'][3]['temp'];
-      dt1 = dt.add(new Duration(hours: 1));
-      formattedDt1 = DateFormat.Hms().format(dt1);
-      this.feels1 = results1['hourly'][3]['feels_like'];
-      this.description1 = results1['hourly'][3]['weather'][0]['description'];
-      this.humidity1 = results1['hourly'][3]['humidity'];
-      this.dewPoint1 = results1['hourly'][3]['dew_point'];
-      this.cloudCoverage1 = results1['hourly'][3]['clouds'];
-      this.visibility1 = results1['hourly'][3]['visibility'];
-      this.windSpeed1 = results1['hourly'][3]['wind_speed'];
 
       /*
       Daily
@@ -293,6 +309,7 @@ class HomeState extends State<Home> {
       this.oneDaym = results1['daily'][1]['temp']['min'];
       dt1Day = dt.add(new Duration(hours: 24));
       formattedDt1Day = DateFormat.MMMd().format(dt1Day);
+      chartH1Double = double.parse(oneDay.toString());
       this.feels1Day = results1['daily'][1]['feels_like']['day'];
       this.description1Day = results1['daily'][1]['weather'][0]['description'];
       this.humidity1Day = results1['daily'][1]['humidity'];
@@ -306,6 +323,7 @@ class HomeState extends State<Home> {
       this.twoDaym = results1['daily'][2]['temp']['min'];
       dt2Day = dt.add(new Duration(hours: 48));
       formattedDt2Day = DateFormat.MMMd().format(dt2Day);
+      chartH2Double = double.parse(twoDay.toString());
       this.feels2Day = results1['daily'][2]['feels_like']['day'];
       this.description2Day = results1['daily'][2]['weather'][0]['description'];
       this.humidity2Day = results1['daily'][2]['humidity'];
@@ -319,6 +337,7 @@ class HomeState extends State<Home> {
       this.threeDaym = results1['daily'][3]['temp']['min'];
       dt3Day = dt.add(new Duration(hours: 72));
       formattedDt3Day = DateFormat.MMMd().format(dt3Day);
+      chartH3Double = double.parse(threeDay.toString());
       this.feels3Day = results1['daily'][3]['feels_like']['day'];
       this.description3Day = results1['daily'][3]['weather'][0]['description'];
       this.humidity3Day = results1['daily'][3]['humidity'];
@@ -332,6 +351,7 @@ class HomeState extends State<Home> {
       this.fourDaym = results1['daily'][4]['temp']['min'];
       dt4Day = dt.add(new Duration(hours: 96));
       formattedDt4Day = DateFormat.MMMd().format(dt4Day);
+      chartH4Double = double.parse(fourDay.toString());
       this.feels4Day = results1['daily'][4]['feels_like']['day'];
       this.description4Day = results1['daily'][4]['weather'][0]['description'];
       this.humidity4Day = results1['daily'][4]['humidity'];
@@ -345,6 +365,7 @@ class HomeState extends State<Home> {
       this.fiveDaym = results1['daily'][5]['temp']['min'];
       dt5Day = dt.add(new Duration(hours: 120));
       formattedDt5Day = DateFormat.MMMd().format(dt5Day);
+      chartH5Double = double.parse(fiveDay.toString());
       this.feels5Day = results1['daily'][5]['feels_like']['day'];
       this.description5Day = results1['daily'][5]['weather'][0]['description'];
       this.humidity5Day = results1['daily'][5]['humidity'];
@@ -1659,6 +1680,95 @@ class HomeState extends State<Home> {
                                       )),
                                     ),
                                   ],
+                                ),
+                              ),
+                            ]))
+                      ])),
+              DefaultTabController(
+                  length: 2, // length of tabs
+                  initialIndex: 0,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Container(
+                          child: TabBar(
+                            labelColor: Colors.amber,
+                            unselectedLabelColor: Colors.black,
+                            tabs: [
+                              Tab(text: 'Next 5 Hours'),
+                              Tab(text: 'Next 5 Days'),
+                            ],
+                          ),
+                        ),
+                        Container(
+                            height: 500, //height of TabBarView
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    top: BorderSide(
+                                        color: Colors.grey, width: 0.5))),
+                            child: TabBarView(children: <Widget>[
+                              Container(
+                                color: Colors.amber,
+                                height: MediaQuery.of(context).size.height / 2,
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                child: BezierChart(
+                                  bezierChartScale: BezierChartScale.CUSTOM,
+                                  xAxisCustomValues: [1, 2, 3, 4, 5],
+                                  series: [
+                                    BezierLine(
+                                      data: [
+                                        DataPoint<double>(
+                                            value: chartDay1Double, xAxis: 1),
+                                        DataPoint<double>(
+                                            value: chartDay2Double, xAxis: 2),
+                                        DataPoint<double>(
+                                            value: chartDay3Double, xAxis: 3),
+                                        DataPoint<double>(
+                                            value: chartDay4Double, xAxis: 4),
+                                        DataPoint<double>(
+                                            value: chartDay5Double, xAxis: 5),
+                                      ],
+                                    ),
+                                  ],
+                                  config: BezierChartConfig(
+                                    verticalIndicatorStrokeWidth: 3.0,
+                                    verticalIndicatorColor: Colors.black26,
+                                    showVerticalIndicator: true,
+                                    backgroundColor: Colors.amber,
+                                    snap: false,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                color: Colors.amber,
+                                height: MediaQuery.of(context).size.height / 2,
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                child: BezierChart(
+                                  bezierChartScale: BezierChartScale.CUSTOM,
+                                  xAxisCustomValues: [1, 2, 3, 4, 5],
+                                  series: [
+                                    BezierLine(
+                                      data: [
+                                        DataPoint<double>(
+                                            value: chartH1Double, xAxis: 1),
+                                        DataPoint<double>(
+                                            value: chartH2Double, xAxis: 2),
+                                        DataPoint<double>(
+                                            value: chartH3Double, xAxis: 3),
+                                        DataPoint<double>(
+                                            value: chartH4Double, xAxis: 4),
+                                        DataPoint<double>(
+                                            value: chartDay5Double, xAxis: 5),
+                                      ],
+                                    ),
+                                  ],
+                                  config: BezierChartConfig(
+                                    verticalIndicatorStrokeWidth: 3.0,
+                                    verticalIndicatorColor: Colors.black26,
+                                    showVerticalIndicator: true,
+                                    backgroundColor: Colors.amber,
+                                    snap: false,
+                                  ),
                                 ),
                               ),
                             ]))

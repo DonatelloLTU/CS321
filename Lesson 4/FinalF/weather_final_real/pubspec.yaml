@@ -33,6 +33,7 @@ dependencies:
   country_state_city_picker: ^1.2.7
   time_formatter:
   intl:
+  bezier_chart: ^1.0.16
 
 dev_dependencies:
   flutter_test:
