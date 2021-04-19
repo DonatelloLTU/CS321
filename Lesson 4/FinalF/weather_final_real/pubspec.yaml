@@ -31,6 +31,8 @@ dependencies:
   http:
   font_awesome_flutter:
   country_state_city_picker: ^1.2.7
+  time_formatter:
+  intl:
 
 dev_dependencies:
   flutter_test:
