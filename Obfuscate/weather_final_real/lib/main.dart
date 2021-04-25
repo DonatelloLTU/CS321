@@ -55,7 +55,6 @@ class HomeState extends State<Home> {
   }
 
   final _formKey = GlobalKey<FormState>();
-  var arr = List(10);
   var temp;
   var description;
   var currently;
@@ -106,129 +105,93 @@ class HomeState extends State<Home> {
   String formattedDt4Day;
   DateTime dt5Day;
   String formattedDt5Day;
-
   var feels0;
   var feels1;
   var feels2;
   var feels3;
   var feels4;
   var feels5;
-
   var description0;
   var description1;
   var description2;
   var description3;
   var description4;
   var description5;
-
   var humidity0;
   var humidity1;
   var humidity2;
   var humidity3;
   var humidity4;
   var humidity5;
-
   var dewPoint0;
   var dewPoint1;
   var dewPoint2;
   var dewPoint3;
   var dewPoint4;
   var dewPoint5;
-
   var cloudCoverage0;
   var cloudCoverage1;
   var cloudCoverage2;
   var cloudCoverage3;
   var cloudCoverage4;
   var cloudCoverage5;
-
   var visibility0;
   var visibility1;
   var visibility2;
   var visibility3;
   var visibility4;
   var visibility5;
-
   var windSpeed1;
   var windSpeed2;
   var windSpeed3;
   var windSpeed4;
   var windSpeed5;
-
   var temp1;
   var temp2;
   var temp3;
   var temp4;
   var temp5;
-
   var feels0Day;
   var feels1Day;
   var feels2Day;
   var feels3Day;
   var feels4Day;
   var feels5Day;
-
   var description0Day;
   var description1Day;
   var description2Day;
   var description3Day;
   var description4Day;
   var description5Day;
-
   var humidity0Day;
   var humidity1Day;
   var humidity2Day;
   var humidity3Day;
   var humidity4Day;
   var humidity5Day;
-
   var dewPoint0Day;
   var dewPoint1Day;
   var dewPoint2Day;
   var dewPoint3Day;
   var dewPoint4Day;
   var dewPoint5Day;
-
   var cloudCoverage0Day;
   var cloudCoverage1Day;
   var cloudCoverage2Day;
   var cloudCoverage3Day;
   var cloudCoverage4Day;
   var cloudCoverage5Day;
-
   var visibility0Day;
   var visibility1Day;
   var visibility2Day;
   var visibility3Day;
   var visibility4Day;
   var visibility5Day;
-
   var windSpeed1Day;
   var windSpeed2Day;
   var windSpeed3Day;
   var windSpeed4Day;
   var windSpeed5Day;
-
-  var windDir1 = -1;
-  var windDir1Double = -1;
-  var windDir2 = -1;
-  var windDir2Double = -1;
-  var windDir3 = -1;
-  var windDir3Double = -1;
-  var windDir4 = -1;
-  var windDir4Double = -1;
-  var windDir5 = -1;
-  var windDir5Double = -1;
-  var windDirDay1 = -1;
-  var windDirDay1Double = -1;
-  var windDirDay2 = -1;
-  var windDirDay2Double = -1;
-  var windDirDay3 = -1;
-  var windDirDay3Double = -1;
-  var windDirDay4 = -1;
-  var windDirDay4Double = -1;
-  var windDirDay5 = -1;
-  var windDirDay5Double = -1;
 
   var sunrise;
   var sunset;
@@ -332,7 +295,6 @@ class HomeState extends State<Home> {
       this.cloudCoverage1 = results1['hourly'][3]['clouds'];
       this.visibility1 = results1['hourly'][3]['visibility'];
       this.windSpeed1 = results1['hourly'][3]['wind_speed'];
-      this.windDir1 = results1['hourly'][3]['wind_deg'];
       chartDay11Double = double.parse(windSpeed1.toString());
 
       //in 2 hour
@@ -348,7 +310,6 @@ class HomeState extends State<Home> {
       this.cloudCoverage2 = results1['hourly'][4]['clouds'];
       this.visibility2 = results1['hourly'][4]['visibility'];
       this.windSpeed2 = results1['hourly'][4]['wind_speed'];
-      this.windDir2 = results1['hourly'][4]['wind_deg'];
       chartDay12Double = double.parse(windSpeed2.toString());
 
       //in 3 hours
@@ -364,7 +325,6 @@ class HomeState extends State<Home> {
       this.visibility3 = results1['hourly'][5]['visibility'];
       this.windSpeed3 = results1['hourly'][5]['wind_speed'];
       chartDay13Double = double.parse(windSpeed3.toString());
-      this.windDir3 = results1['hourly'][5]['wind_deg'];
 
       //in 4 hours
       this.four = results1['hourly'][6]['temp'];
@@ -379,7 +339,6 @@ class HomeState extends State<Home> {
       this.visibility4 = results1['hourly'][6]['visibility'];
       this.windSpeed4 = results1['hourly'][6]['wind_speed'];
       chartDay14Double = double.parse(windSpeed4.toString());
-      this.windDir4 = results1['hourly'][6]['wind_deg'];
 
       //in 5 hours
       this.five = results1['hourly'][7]['temp'];
@@ -393,7 +352,6 @@ class HomeState extends State<Home> {
       this.cloudCoverage5 = results1['hourly'][7]['clouds'];
       this.visibility5 = results1['hourly'][7]['visibility'];
       this.windSpeed5 = results1['hourly'][7]['wind_speed'];
-      this.windDir5 = results1['hourly'][7]['wind_deg'];
       chartDay15Double = double.parse(windSpeed5.toString());
 
       /*
@@ -412,7 +370,6 @@ class HomeState extends State<Home> {
       this.cloudCoverage1Day = results1['daily'][1]['clouds'];
       this.visibility1Day = results1['daily'][1]['weather'][0]['main'];
       this.windSpeed1Day = results1['daily'][1]['wind_speed'];
-      this.windDirDay1 = results1['daily'][1]['wind_deg'];
       chartH11Double = double.parse(windSpeed1Day.toString());
 
       //in 2 days
@@ -428,7 +385,6 @@ class HomeState extends State<Home> {
       this.cloudCoverage2Day = results1['daily'][2]['clouds'];
       this.visibility2Day = results1['daily'][2]['weather'][0]['main'];
       this.windSpeed2Day = results1['daily'][2]['wind_speed'];
-      this.windDirDay2 = results1['daily'][2]['wind_deg'];
       chartH12Double = double.parse(windSpeed2Day.toString());
 
       //in 3 days
@@ -444,7 +400,6 @@ class HomeState extends State<Home> {
       this.cloudCoverage3Day = results1['daily'][3]['clouds'];
       this.visibility3Day = results1['daily'][3]['weather'][0]['main'];
       this.windSpeed3Day = results1['daily'][3]['wind_speed'];
-      this.windDirDay3 = results1['daily'][3]['wind_deg'];
       chartH13Double = double.parse(windSpeed3Day.toString());
 
       //in 4 days
@@ -460,7 +415,6 @@ class HomeState extends State<Home> {
       this.cloudCoverage4Day = results1['daily'][4]['clouds'];
       this.visibility4Day = results1['daily'][4]['weather'][0]['main'];
       this.windSpeed4Day = results1['daily'][4]['wind_speed'];
-      this.windDirDay4 = results1['daily'][4]['wind_deg'];
       chartH14Double = double.parse(windSpeed4Day.toString());
 
       //in 5 days
@@ -476,7 +430,6 @@ class HomeState extends State<Home> {
       this.cloudCoverage5Day = results1['daily'][5]['clouds'];
       this.visibility5Day = results1['daily'][5]['weather'][0]['main'];
       this.windSpeed5Day = results1['daily'][5]['wind_speed'];
-      this.windDirDay5 = results1['daily'][5]['wind_deg'];
       chartH15Double = double.parse(windSpeed5Day.toString());
     });
   }
@@ -539,53 +492,6 @@ class HomeState extends State<Home> {
     });
   }
 
-  void changeToDirection() {
-    setState(() {
-      arr[0] = windDir1;
-      arr[1] = windDir2;
-      arr[2] = windDir3;
-      arr[3] = windDir4;
-      arr[4] = windDir5;
-      arr[5] = windDirDay1;
-      arr[6] = windDirDay2;
-      arr[7] = windDirDay3;
-      arr[8] = windDirDay4;
-      arr[9] = windDirDay5;
-      int i = 0;
-      while (i < 10) {
-        int g = int.parse(arr[i].toString());
-        if (g < 0) {
-          arr[i] = 'Loading';
-          i++;
-        } else if (g < 12 || g > 348) {
-          arr[i] = 'N';
-          i++;
-        } else if (g > 11 && g < 89) {
-          arr[i] = 'NE';
-          i++;
-        } else if (g > 88 && g < 102) {
-          arr[i] = 'E';
-          i++;
-        } else if (g > 101 && g < 169) {
-          arr[i] = 'SE';
-          i++;
-        } else if (g > 168 && g < 192) {
-          arr[i] = 'S';
-          i++;
-        } else if (g > 191 && g < 259) {
-          arr[i] = 'SW';
-          i++;
-        } else if (g > 258 && g < 282) {
-          arr[i] = 'W';
-          i++;
-        } else if (g > 281 && g < 349) {
-          arr[i] = 'NW';
-          i++;
-        }
-      }
-    });
-  }
-
   String switchChange() {
     if (isSwitched == false) {
       units = 'imperial';
@@ -598,7 +504,6 @@ class HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    changeToDirection();
     switchChange();
     addInitialCityStateToList();
     this.getWeather();
@@ -687,7 +592,6 @@ class HomeState extends State<Home> {
                   setState(() {
                     selectedUser = Value;
                     this.getWeather();
-                    this.changeToDirection();
                     this.getSunMoon();
                   });
                 },
@@ -723,7 +627,7 @@ class HomeState extends State<Home> {
                 activeColor: Colors.orangeAccent,
               ),
               SizedBox(
-                height: 300,
+                height: 250,
                 child: Container(
                     child: Expanded(
                         child: Padding(
@@ -756,12 +660,6 @@ class HomeState extends State<Home> {
                         trailing: Text(windSpeed != null
                             ? windSpeed.toString()
                             : "Loading"),
-                      ),
-                      ListTile(
-                        leading: FaIcon(FontAwesomeIcons.wind),
-                        title: Text("Wind Direction"),
-                        trailing: Text(
-                            arr[0] != null ? arr[0].toString() : "Loading"),
                       )
                     ],
                   ),
@@ -784,7 +682,7 @@ class HomeState extends State<Home> {
                           ),
                         ),
                         Container(
-                            height: 600, //height of TabBarView
+                            height: 550, //height of TabBarView
                             decoration: BoxDecoration(
                                 border: Border(
                                     top: BorderSide(
@@ -870,14 +768,6 @@ class HomeState extends State<Home> {
                                               trailing: Text(windSpeed1 != null
                                                   ? windSpeed1.toString()
                                                   : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind direction:"),
-                                              trailing: Text(arr[0] != null
-                                                  ? arr[0].toString()
-                                                  : "Loading"),
                                             )
                                           ],
                                         ),
@@ -956,14 +846,6 @@ class HomeState extends State<Home> {
                                               title: Text("Wind speed:"),
                                               trailing: Text(windSpeed2 != null
                                                   ? windSpeed2.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind direction:"),
-                                              trailing: Text(arr[1] != null
-                                                  ? arr[1].toString()
                                                   : "Loading"),
                                             )
                                           ],
@@ -1044,14 +926,6 @@ class HomeState extends State<Home> {
                                               trailing: Text(windSpeed3 != null
                                                   ? windSpeed3.toString()
                                                   : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind direction:"),
-                                              trailing: Text(arr[2] != null
-                                                  ? arr[2].toString()
-                                                  : "Loading"),
                                             )
                                           ],
                                         ),
@@ -1131,14 +1005,6 @@ class HomeState extends State<Home> {
                                               trailing: Text(windSpeed4 != null
                                                   ? windSpeed4.toString()
                                                   : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind direction:"),
-                                              trailing: Text(arr[3] != null
-                                                  ? arr[3].toString()
-                                                  : "Loading"),
                                             )
                                           ],
                                         ),
@@ -1217,14 +1083,6 @@ class HomeState extends State<Home> {
                                               title: Text("Wind speed:"),
                                               trailing: Text(windSpeed5 != null
                                                   ? windSpeed5.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind direction:"),
-                                              trailing: Text(arr[4] != null
-                                                  ? arr[4].toString()
                                                   : "Loading"),
                                             )
                                           ],
@@ -1323,14 +1181,6 @@ class HomeState extends State<Home> {
                                                   windSpeed1Day != null
                                                       ? windSpeed1Day.toString()
                                                       : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind direction:"),
-                                              trailing: Text(arr[5] != null
-                                                  ? arr[5].toString()
-                                                  : "Loading"),
                                             )
                                           ],
                                         ),
@@ -1419,14 +1269,6 @@ class HomeState extends State<Home> {
                                                   windSpeed2Day != null
                                                       ? windSpeed2Day.toString()
                                                       : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind direction:"),
-                                              trailing: Text(arr[6] != null
-                                                  ? arr[6].toString()
-                                                  : "Loading"),
                                             )
                                           ],
                                         ),
@@ -1515,14 +1357,6 @@ class HomeState extends State<Home> {
                                                   windSpeed3Day != null
                                                       ? windSpeed3Day.toString()
                                                       : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind direction:"),
-                                              trailing: Text(arr[7] != null
-                                                  ? arr[7].toString()
-                                                  : "Loading"),
                                             )
                                           ],
                                         ),
@@ -1611,14 +1445,6 @@ class HomeState extends State<Home> {
                                                   windSpeed4Day != null
                                                       ? windSpeed4Day.toString()
                                                       : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind direction:"),
-                                              trailing: Text(arr[8] != null
-                                                  ? arr[8].toString()
-                                                  : "Loading"),
                                             )
                                           ],
                                         ),
@@ -1707,14 +1533,6 @@ class HomeState extends State<Home> {
                                                   windSpeed5Day != null
                                                       ? windSpeed5Day.toString()
                                                       : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind direction:"),
-                                              trailing: Text(arr[9] != null
-                                                  ? arr[9].toString()
-                                                  : "Loading"),
                                             )
                                           ],
                                         ),
