@@ -8,7 +8,6 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import 'UnitConversion/unit_conversion.dart';
 import 'ad_state.dart';
 import 'bezier-chart/lib/bezier_chart.dart';
 import 'countries/country_state_city_picker.dart';
@@ -600,29 +599,6 @@ class HomeState extends State<Home> {
     if (isSwitched == false) {
       units = 'imperial';
     } else {
-      setState(() {
-        temp = UnitConverter.fahrenheitToCelsius(temp);
-        temp1 = UnitConverter.fahrenheitToCelsius(temp1);
-        temp2 = UnitConverter.fahrenheitToCelsius(temp2);
-        temp3 = UnitConverter.fahrenheitToCelsius(temp3);
-        temp4 = UnitConverter.fahrenheitToCelsius(temp4);
-        temp5 = UnitConverter.fahrenheitToCelsius(temp5);
-
-        feels0 = UnitConverter.fahrenheitToCelsius(feels0);
-        feels1 = UnitConverter.fahrenheitToCelsius(feels1);
-        feels2 = UnitConverter.fahrenheitToCelsius(feels2);
-        feels3 = UnitConverter.fahrenheitToCelsius(feels3);
-        feels4 = UnitConverter.fahrenheitToCelsius(feels4);
-        feels5 = UnitConverter.fahrenheitToCelsius(feels5);
-
-        windSpeed = UnitConverter.milesToKilometers(windSpeed);
-        windSpeed1 = UnitConverter.milesToKilometers(windSpeed1);
-        windSpeed2 = UnitConverter.milesToKilometers(windSpeed2);
-        windSpeed3 = UnitConverter.milesToKilometers(windSpeed3);
-        windSpeed4 = UnitConverter.milesToKilometers(windSpeed4);
-        windSpeed5 = UnitConverter.milesToKilometers(windSpeed5);
-      });
-
       units = 'metric';
     }
     return units;
