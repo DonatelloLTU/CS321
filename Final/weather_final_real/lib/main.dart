@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import 'WeatherWidget.dart';
 import 'ad_state.dart';
 import 'bezier-chart/lib/bezier_chart.dart';
 import 'countries/country_state_city_picker.dart';
@@ -55,6 +56,7 @@ class HomeState extends State<Home> {
   }
 
   final _formKey = GlobalKey<FormState>();
+  var arr = List(10);
   var temp;
   var description;
   var currently;
@@ -81,6 +83,7 @@ class HomeState extends State<Home> {
   var fourDaym;
   var fiveDay;
   var fiveDaym;
+
   DateTime dt = DateTime.now();
   String day;
   String month;
@@ -112,36 +115,42 @@ class HomeState extends State<Home> {
   var feels3;
   var feels4;
   var feels5;
+
   var description0;
   var description1;
   var description2;
   var description3;
   var description4;
   var description5;
+
   var humidity0;
   var humidity1;
   var humidity2;
   var humidity3;
   var humidity4;
   var humidity5;
+
   var dewPoint0;
   var dewPoint1;
   var dewPoint2;
   var dewPoint3;
   var dewPoint4;
   var dewPoint5;
+
   var cloudCoverage0;
   var cloudCoverage1;
   var cloudCoverage2;
   var cloudCoverage3;
   var cloudCoverage4;
   var cloudCoverage5;
+
   var visibility0;
   var visibility1;
   var visibility2;
   var visibility3;
   var visibility4;
   var visibility5;
+
   var windSpeed1;
   var windSpeed2;
   var windSpeed3;
@@ -153,47 +162,75 @@ class HomeState extends State<Home> {
   var temp3;
   var temp4;
   var temp5;
+
   var feels0Day;
   var feels1Day;
   var feels2Day;
   var feels3Day;
   var feels4Day;
   var feels5Day;
+
   var description0Day;
   var description1Day;
   var description2Day;
   var description3Day;
   var description4Day;
   var description5Day;
+
   var humidity0Day;
   var humidity1Day;
   var humidity2Day;
   var humidity3Day;
   var humidity4Day;
   var humidity5Day;
+
   var dewPoint0Day;
   var dewPoint1Day;
   var dewPoint2Day;
   var dewPoint3Day;
   var dewPoint4Day;
   var dewPoint5Day;
+
   var cloudCoverage0Day;
   var cloudCoverage1Day;
   var cloudCoverage2Day;
   var cloudCoverage3Day;
   var cloudCoverage4Day;
   var cloudCoverage5Day;
+
   var visibility0Day;
   var visibility1Day;
   var visibility2Day;
   var visibility3Day;
   var visibility4Day;
   var visibility5Day;
+
   var windSpeed1Day;
   var windSpeed2Day;
   var windSpeed3Day;
   var windSpeed4Day;
   var windSpeed5Day;
+
+  var windDir1 = -1;
+  var windDir1Double = -1;
+  var windDir2 = -1;
+  var windDir2Double = -1;
+  var windDir3 = -1;
+  var windDir3Double = -1;
+  var windDir4 = -1;
+  var windDir4Double = -1;
+  var windDir5 = -1;
+  var windDir5Double = -1;
+  var windDirDay1 = -1;
+  var windDirDay1Double = -1;
+  var windDirDay2 = -1;
+  var windDirDay2Double = -1;
+  var windDirDay3 = -1;
+  var windDirDay3Double = -1;
+  var windDirDay4 = -1;
+  var windDirDay4Double = -1;
+  var windDirDay5 = -1;
+  var windDirDay5Double = -1;
 
   var sunrise;
   var sunset;
@@ -252,6 +289,13 @@ class HomeState extends State<Home> {
 
   bool isSwitched = false;
 
+  String weatherBcgrnd = "Sunny";
+  bool _isVisible = true;
+  bool _cloudIsVisible = false;
+  bool _thunderIsVisible = false;
+  bool _snowIsVisible = false;
+  bool _rainIsVisible = false;
+
   Future getWeather() async {
     http.Response response = await http.get(
         "http://api.openweathermap.org/data/2.5/weather?q=" +
@@ -262,6 +306,7 @@ class HomeState extends State<Home> {
     var results = jsonDecode(response.body);
     setState(() {
       this.temp = results['main']['temp'];
+
       this.description = results['weather'][0]['description'];
       this.currently = results['weather'][0]['main'];
       this.humidity = results['main']['humidity'];
@@ -280,7 +325,7 @@ class HomeState extends State<Home> {
     var results1 = jsonDecode(response1.body);
     setState(() {
       /*
-      Hourly
+      Hourly temperature, wind, direction, time
        */
       //in an hour
       this.day = DateFormat.d().format(dt);
@@ -297,6 +342,7 @@ class HomeState extends State<Home> {
       this.cloudCoverage1 = results1['hourly'][3]['clouds'];
       this.visibility1 = results1['hourly'][3]['visibility'];
       this.windSpeed1 = results1['hourly'][3]['wind_speed'];
+      this.windDir1 = results1['hourly'][3]['wind_deg'];
       chartDay11Double = double.parse(windSpeed1.toString());
 
       //in 2 hour
@@ -312,6 +358,7 @@ class HomeState extends State<Home> {
       this.cloudCoverage2 = results1['hourly'][4]['clouds'];
       this.visibility2 = results1['hourly'][4]['visibility'];
       this.windSpeed2 = results1['hourly'][4]['wind_speed'];
+      this.windDir2 = results1['hourly'][4]['wind_deg'];
       chartDay12Double = double.parse(windSpeed2.toString());
 
       //in 3 hours
@@ -327,6 +374,7 @@ class HomeState extends State<Home> {
       this.visibility3 = results1['hourly'][5]['visibility'];
       this.windSpeed3 = results1['hourly'][5]['wind_speed'];
       chartDay13Double = double.parse(windSpeed3.toString());
+      this.windDir3 = results1['hourly'][5]['wind_deg'];
 
       //in 4 hours
       this.four = results1['hourly'][6]['temp'];
@@ -341,6 +389,7 @@ class HomeState extends State<Home> {
       this.visibility4 = results1['hourly'][6]['visibility'];
       this.windSpeed4 = results1['hourly'][6]['wind_speed'];
       chartDay14Double = double.parse(windSpeed4.toString());
+      this.windDir4 = results1['hourly'][6]['wind_deg'];
 
       //in 5 hours
       this.five = results1['hourly'][7]['temp'];
@@ -354,6 +403,7 @@ class HomeState extends State<Home> {
       this.cloudCoverage5 = results1['hourly'][7]['clouds'];
       this.visibility5 = results1['hourly'][7]['visibility'];
       this.windSpeed5 = results1['hourly'][7]['wind_speed'];
+      this.windDir5 = results1['hourly'][7]['wind_deg'];
       chartDay15Double = double.parse(windSpeed5.toString());
 
       /*
@@ -372,6 +422,7 @@ class HomeState extends State<Home> {
       this.cloudCoverage1Day = results1['daily'][1]['clouds'];
       this.visibility1Day = results1['daily'][1]['weather'][0]['main'];
       this.windSpeed1Day = results1['daily'][1]['wind_speed'];
+      this.windDirDay1 = results1['daily'][1]['wind_deg'];
       chartH11Double = double.parse(windSpeed1Day.toString());
 
       //in 2 days
@@ -387,6 +438,7 @@ class HomeState extends State<Home> {
       this.cloudCoverage2Day = results1['daily'][2]['clouds'];
       this.visibility2Day = results1['daily'][2]['weather'][0]['main'];
       this.windSpeed2Day = results1['daily'][2]['wind_speed'];
+      this.windDirDay2 = results1['daily'][2]['wind_deg'];
       chartH12Double = double.parse(windSpeed2Day.toString());
 
       //in 3 days
@@ -402,6 +454,7 @@ class HomeState extends State<Home> {
       this.cloudCoverage3Day = results1['daily'][3]['clouds'];
       this.visibility3Day = results1['daily'][3]['weather'][0]['main'];
       this.windSpeed3Day = results1['daily'][3]['wind_speed'];
+      this.windDirDay3 = results1['daily'][3]['wind_deg'];
       chartH13Double = double.parse(windSpeed3Day.toString());
 
       //in 4 days
@@ -417,6 +470,7 @@ class HomeState extends State<Home> {
       this.cloudCoverage4Day = results1['daily'][4]['clouds'];
       this.visibility4Day = results1['daily'][4]['weather'][0]['main'];
       this.windSpeed4Day = results1['daily'][4]['wind_speed'];
+      this.windDirDay4 = results1['daily'][4]['wind_deg'];
       chartH14Double = double.parse(windSpeed4Day.toString());
 
       //in 5 days
@@ -432,7 +486,11 @@ class HomeState extends State<Home> {
       this.cloudCoverage5Day = results1['daily'][5]['clouds'];
       this.visibility5Day = results1['daily'][5]['weather'][0]['main'];
       this.windSpeed5Day = results1['daily'][5]['wind_speed'];
+      this.windDirDay5 = results1['daily'][5]['wind_deg'];
       chartH15Double = double.parse(windSpeed5Day.toString());
+
+      this.changeToDirection();
+      this.changeBaground();
     });
   }
 
@@ -480,6 +538,62 @@ class HomeState extends State<Home> {
     });
   }
 
+  void all() {
+    setState(() {
+      this.getWeather();
+
+      this.getSunMoon();
+    });
+  }
+
+  void changeBaground() {
+    setState(() {
+      if (description.toString() == "light rain" ||
+          description.toString() == "rain" ||
+          description.toString() == "shower rain" ||
+          description.toString() == "mist" ||
+          description.toString() == "moderate rain") {
+        weatherBcgrnd = "Rainy";
+        _rainIsVisible = true;
+        _isVisible = false;
+        _cloudIsVisible = false;
+        _snowIsVisible = false;
+        _thunderIsVisible = false;
+      } else if (description.toString() == "thunderstorm") {
+        weatherBcgrnd = "Thunder";
+        _thunderIsVisible = true;
+        _isVisible = false;
+        _cloudIsVisible = false;
+        _snowIsVisible = false;
+        _rainIsVisible = false;
+      } else if (description.toString() == "snow") {
+        weatherBcgrnd = "Snowy";
+        _snowIsVisible = true;
+        _isVisible = false;
+        _cloudIsVisible = false;
+        _rainIsVisible = false;
+        _thunderIsVisible = false;
+      } else if (description.toString() == "broken clouds" ||
+          description == "scattered clouds" ||
+          description == "few clouds" ||
+          description == "overcast clouds") {
+        weatherBcgrnd = "Cloudy";
+        _cloudIsVisible = true;
+        _isVisible = false;
+        _rainIsVisible = false;
+        _snowIsVisible = false;
+        _thunderIsVisible = false;
+      } else {
+        weatherBcgrnd = "Sunny";
+        _cloudIsVisible = false;
+        _isVisible = true;
+        _rainIsVisible = false;
+        _snowIsVisible = false;
+        _thunderIsVisible = false;
+      }
+    });
+  }
+
   void addInitialCityStateToList() {
     setState(() {
       users.insert(
@@ -491,6 +605,53 @@ class HomeState extends State<Home> {
               color: const Color(0xFFFFCA28),
             )),
       );
+    });
+  }
+
+  void changeToDirection() {
+    setState(() {
+      arr[0] = windDir1;
+      arr[1] = windDir2;
+      arr[2] = windDir3;
+      arr[3] = windDir4;
+      arr[4] = windDir5;
+      arr[5] = windDirDay1;
+      arr[6] = windDirDay2;
+      arr[7] = windDirDay3;
+      arr[8] = windDirDay4;
+      arr[9] = windDirDay5;
+      int i = 0;
+      while (i < 10) {
+        int g = int.parse(arr[i].toString());
+        if (g < 0) {
+          arr[i] = 'Loading';
+          i++;
+        } else if (g < 12 || g > 348) {
+          arr[i] = 'N';
+          i++;
+        } else if (g > 11 && g < 89) {
+          arr[i] = 'NE';
+          i++;
+        } else if (g > 88 && g < 102) {
+          arr[i] = 'E';
+          i++;
+        } else if (g > 101 && g < 169) {
+          arr[i] = 'SE';
+          i++;
+        } else if (g > 168 && g < 192) {
+          arr[i] = 'S';
+          i++;
+        } else if (g > 191 && g < 259) {
+          arr[i] = 'SW';
+          i++;
+        } else if (g > 258 && g < 282) {
+          arr[i] = 'W';
+          i++;
+        } else if (g > 281 && g < 349) {
+          arr[i] = 'NW';
+          i++;
+        }
+      }
     });
   }
 
@@ -506,6 +667,7 @@ class HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    changeToDirection();
     switchChange();
     addInitialCityStateToList();
     this.getWeather();
@@ -514,1415 +676,1618 @@ class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        drawer: Drawer(
-          child: ListView(padding: EdgeInsets.zero, children: <Widget>[
-            DrawerHeader(
-              child: Text(
-                'Weather app',
-                style: TextStyle(
-                  fontSize: 40,
-                  //fontWeight: FontWeight.bold,
-                  foreground: Paint()
-                    ..style = PaintingStyle.fill
-                    ..strokeWidth = 3
-                    ..color = Colors.white,
-                ),
-              ),
-              decoration: BoxDecoration(color: Colors.amber),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              height: 600,
-              child: Column(
-                children: [
-                  SelectState(
-                    onCountryChanged: (value) {
-                      setState(() {
-                        countryValue = value;
-                      });
-                    },
-                    onStateChanged: (value) {
-                      setState(() {
-                        stateValue = value;
-                      });
-                    },
-                    onCityChanged: (value) {
-                      setState(() {
-                        cityValue = value;
-                      });
-                    },
+      child: Stack(children: <Widget>[
+        Visibility(
+          visible: _thunderIsVisible,
+          child: WeatherWidget(
+              size: Size.infinite,
+              weather: 'Thunder',
+              thunderConfig: ThunderConfig(thunderWidth: 12)),
+        ),
+
+        Visibility(
+          visible: _isVisible,
+          child: WeatherWidget(
+              size: Size.infinite,
+              weather: 'Sunny',
+              sunConfig: SunConfig(
+                  sunWidth: 360,
+                  sunOutMill: 1500,
+                  sunMidMill: 1500,
+                  sunInColor: Colors.orange,
+                  bottomColor: Colors.deepOrangeAccent[100],
+                  topColor: Colors.yellow,
+                  sunMidColor: Colors.yellow[400],
+                  sunOutColor: Colors.orange[400],
+                  sunBlurStyle: BlurStyle.solid,
+                  sunBlurSigma: 13)),
+        ),
+
+        Visibility(
+            visible: _cloudIsVisible,
+            child: WeatherWidget(
+                size: Size.infinite,
+                weather: 'Cloudy',
+                cloudConfig: CloudConfig(
+                  topColor: Colors.blue[800],
+                  cloudColor: Colors.white70,
+                  showCloud: true,
+                ))),
+
+        Visibility(
+            visible: _rainIsVisible,
+            child: WeatherWidget(
+                size: Size.infinite,
+                weather: 'Rainy',
+                rainConfig: RainConfig(
+                  rainNum: 10,
+                  rainCurve: Curves.easeInExpo,
+                  rainColor: Color(0x9978909C),
+                  topColor: Colors.blue[800],
+                  rainRangeYEnd: 620,
+                  durationRangeStartMill: 500,
+                  durationRangeEndMill: 2500,
+                  rainLength: 16,
+                  rainWidth: 5,
+                ))),
+
+        Visibility(
+          visible: _snowIsVisible,
+          child: WeatherWidget(
+              size: Size.infinite,
+              weather: 'Snowy',
+              snowConfig: SnowConfig(
+                  snowSize: 20,
+                  snowAreaXStart: 30,
+                  snowAreaXEnd: 220,
+                  snowWaveRangeMin: 20,
+                  snowWaveRangeMax: 110,
+                  snowFallSecMin: 10,
+                  snowFallSecMax: 60,
+                  snowWaveSecMin: 5,
+                  snowWaveSecMax: 20,
+                  snowAreaYStart: 200,
+                  snowAreaYEnd: 620,
+                  snowColor: Colors.white70,
+                  fadeCurve: Curves.easeInCirc,
+                  waveCurve: Curves.easeInOutSine)),
+        ),
+
+        //sunConfig: SunConfig()),
+        Scaffold(
+          drawer: Drawer(
+            child: ListView(padding: EdgeInsets.zero, children: <Widget>[
+              DrawerHeader(
+                child: Text(
+                  'Weather app',
+                  style: TextStyle(
+                    fontSize: 40,
+                    //fontWeight: FontWeight.bold,
+                    foreground: Paint()
+                      ..style = PaintingStyle.fill
+                      ..strokeWidth = 3
+                      ..color = Colors.white,
                   ),
-                ],
-              ),
-            ),
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                addCityStateToList();
-              },
-            ),
-          ]),
-        ),
-        appBar: AppBar(
-          backgroundColor: Color(0xFFFFCA28),
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: Text('Weather App'),
-        ),
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              if (banner == null)
-                SizedBox(
-                  height: 50,
-                  child: Placeholder(),
-                )
-              else
-                Container(
-                  height: 50,
-                  child: AdWidget(ad: banner),
                 ),
-              DropdownButton<Item>(
-                hint: Text("Select item"),
-                value: selectedUser,
-                onChanged: (Item Value) {
-                  setState(() {
-                    selectedUser = Value;
-                    this.getWeather();
-                    this.getSunMoon();
-                  });
+                decoration: BoxDecoration(color: Colors.amber),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                height: 600,
+                child: Column(
+                  children: [
+                    SelectState(
+                      onCountryChanged: (value) {
+                        setState(() {
+                          countryValue = value;
+                        });
+                      },
+                      onStateChanged: (value) {
+                        setState(() {
+                          stateValue = value;
+                        });
+                      },
+                      onCityChanged: (value) {
+                        setState(() {
+                          cityValue = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  addCityStateToList();
                 },
-                items: users.map((Item user) {
-                  return DropdownMenuItem<Item>(
-                    value: user,
-                    child: Row(
+              ),
+            ]),
+          ),
+          appBar: AppBar(
+            backgroundColor: Color(0xFFFFCA28).withOpacity(0.5),
+            // Here we take the value from the MyHomePage object that was created by
+            // the App.build method, and use it to set our appbar title.
+            title: Text('Weather App'),
+          ),
+          backgroundColor: Colors.transparent,
+          body: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            // Center is a layout widget. It takes a single child and positions it
+            // in the middle of the parent.
+
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                if (banner == null)
+                  SizedBox(
+                    height: 50,
+                    child: Placeholder(),
+                  )
+                else
+                  Container(
+                    height: 50,
+                    child: AdWidget(ad: banner),
+                  ),
+                DropdownButton<Item>(
+                  hint: Text("Select item"),
+                  value: selectedUser,
+                  onChanged: (Item Value) {
+                    setState(() {
+                      selectedUser = Value;
+                      this.all();
+                    });
+                  },
+                  items: users.map((Item user) {
+                    return DropdownMenuItem<Item>(
+                      value: user,
+                      child: Row(
+                        children: <Widget>[
+                          user.icon,
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            user.name,
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+                Text('Switch F (Imperial) - C (Metric)'),
+                Switch(
+                  value: isSwitched,
+                  onChanged: (value) {
+                    setState(() {
+                      isSwitched = value;
+                      switchChange();
+                      getWeather();
+                    });
+                  },
+                  activeTrackColor: Colors.yellow,
+                  activeColor: Colors.orangeAccent,
+                ),
+                SizedBox(
+                  height: 300,
+                  child: Container(
+                      child: Expanded(
+                          child: Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: ListView(
                       children: <Widget>[
-                        user.icon,
-                        SizedBox(
-                          width: 10,
+                        ListTile(
+                          leading: FaIcon(FontAwesomeIcons.thermometerHalf),
+                          title: Text("Temperature"),
+                          trailing: Text(temp != null
+                              ? temp.toString() + "\u00B0"
+                              : "Loading"),
                         ),
-                        Text(
-                          user.name,
-                          style: TextStyle(color: Colors.black),
+                        ListTile(
+                          leading: FaIcon(FontAwesomeIcons.cloud),
+                          title: Text("Weather"),
+                          trailing: Text(description != null
+                              ? description.toString()
+                              : "Loading"),
                         ),
+                        ListTile(
+                          leading: FaIcon(FontAwesomeIcons.sun),
+                          title: Text("Humidity"),
+                          trailing: Text(humidity != null
+                              ? humidity.toString()
+                              : "Loading"),
+                        ),
+                        ListTile(
+                          leading: FaIcon(FontAwesomeIcons.wind),
+                          title: Text("Wind Speed"),
+                          trailing: Text(windSpeed != null
+                              ? windSpeed.toString()
+                              : "Loading"),
+                        ),
+                        ListTile(
+                          leading: FaIcon(FontAwesomeIcons.wind),
+                          title: Text("Wind Direction"),
+                          trailing: Text(
+                              arr[0] != null ? arr[0].toString() : "Loading"),
+                        )
                       ],
                     ),
-                  );
-                }).toList(),
-              ),
-              Text('Switch F (Imperial) - C (Metric)'),
-              Switch(
-                value: isSwitched,
-                onChanged: (value) {
-                  setState(() {
-                    isSwitched = value;
-                    switchChange();
-                    getWeather();
-                  });
-                },
-                activeTrackColor: Colors.yellow,
-                activeColor: Colors.orangeAccent,
-              ),
-              SizedBox(
-                height: 250,
-                child: Container(
-                    child: Expanded(
-                        child: Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: ListView(
-                    children: <Widget>[
-                      ListTile(
-                        leading: FaIcon(FontAwesomeIcons.thermometerHalf),
-                        title: Text("Temperature"),
-                        trailing: Text(temp != null
-                            ? temp.toString() + "\u00B0"
-                            : "Loading"),
-                      ),
-                      ListTile(
-                        leading: FaIcon(FontAwesomeIcons.cloud),
-                        title: Text("Weather"),
-                        trailing: Text(description != null
-                            ? description.toString()
-                            : "Loading"),
-                      ),
-                      ListTile(
-                        leading: FaIcon(FontAwesomeIcons.sun),
-                        title: Text("Humidity"),
-                        trailing: Text(
-                            humidity != null ? humidity.toString() : "Loading"),
-                      ),
-                      ListTile(
-                        leading: FaIcon(FontAwesomeIcons.wind),
-                        title: Text("Wind Speed"),
-                        trailing: Text(windSpeed != null
-                            ? windSpeed.toString()
-                            : "Loading"),
-                      )
-                    ],
-                  ),
-                ))),
-              ),
-              DefaultTabController(
-                  length: 2, // length of tabs
-                  initialIndex: 0,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Container(
-                          child: TabBar(
-                            labelColor: Colors.amber,
-                            unselectedLabelColor: Colors.black,
-                            tabs: [
-                              Tab(text: 'Hourly'),
-                              Tab(text: 'Daily'),
-                            ],
+                  ))),
+                ),
+                DefaultTabController(
+                    length: 2, // length of tabs
+                    initialIndex: 0,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Container(
+                            child: TabBar(
+                              labelColor: Colors.amber,
+                              unselectedLabelColor: Colors.black,
+                              tabs: [
+                                Tab(text: 'Hourly'),
+                                Tab(text: 'Daily'),
+                              ],
+                            ),
                           ),
-                        ),
-                        Container(
-                            height: 550, //height of TabBarView
-                            decoration: BoxDecoration(
-                                border: Border(
-                                    top: BorderSide(
-                                        color: Colors.grey, width: 0.5))),
-                            child: TabBarView(children: <Widget>[
-                              Container(
-                                margin: EdgeInsets.symmetric(vertical: 20.0),
-                                height: 200.0,
-                                child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: <Widget>[
-                                    Container(
-                                      width: 400.0,
-                                      color: Colors.amber,
-                                      child: Expanded(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(20.0),
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.clock),
-                                              title: Text("Time:"),
-                                              trailing: Text(
-                                                  formattedDt1 != null
-                                                      ? formattedDt1.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(FontAwesomeIcons
-                                                  .thermometerHalf),
-                                              title: Text("Temp:"),
-                                              trailing: Text(one != null
-                                                  ? one.toString() + "\u00B0"
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.info),
-                                              title: Text("Description:"),
-                                              trailing: Text(
-                                                  description1 != null
-                                                      ? description1.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Humidity"),
-                                              trailing: Text(humidity1 != null
-                                                  ? humidity1.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudRain),
-                                              title: Text("Dew Point:"),
-                                              trailing: Text(dewPoint1 != null
-                                                  ? dewPoint1.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudSun),
-                                              title: Text("Cloud coverage:"),
-                                              trailing: Text(cloudCoverage1 !=
-                                                      null
-                                                  ? cloudCoverage1.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.lowVision),
-                                              title: Text("Visibility:"),
-                                              trailing: Text(visibility1 != null
-                                                  ? visibility1.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind speed:"),
-                                              trailing: Text(windSpeed1 != null
-                                                  ? windSpeed1.toString()
-                                                  : "Loading"),
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                    ),
-                                    Container(
-                                      width: 400.0,
-                                      color: Colors.white,
-                                      child: Expanded(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(20.0),
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.clock),
-                                              title: Text("Time:"),
-                                              trailing: Text(
-                                                  formattedDt2 != null
-                                                      ? formattedDt2.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(FontAwesomeIcons
-                                                  .thermometerHalf),
-                                              title: Text("Temp:"),
-                                              trailing: Text(two != null
-                                                  ? two.toString() + "\u00B0"
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.info),
-                                              title: Text("Description:"),
-                                              trailing: Text(
-                                                  description2 != null
-                                                      ? description2.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Humidity"),
-                                              trailing: Text(humidity2 != null
-                                                  ? humidity2.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudRain),
-                                              title: Text("Dew Point:"),
-                                              trailing: Text(dewPoint2 != null
-                                                  ? dewPoint2.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudSun),
-                                              title: Text("Cloud coverage:"),
-                                              trailing: Text(cloudCoverage2 !=
-                                                      null
-                                                  ? cloudCoverage2.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.lowVision),
-                                              title: Text("Visibility:"),
-                                              trailing: Text(visibility2 != null
-                                                  ? visibility2.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind speed:"),
-                                              trailing: Text(windSpeed2 != null
-                                                  ? windSpeed2.toString()
-                                                  : "Loading"),
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                    ),
-                                    Container(
-                                      width: 400.0,
-                                      color: Colors.amber,
-                                      child: Expanded(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(20.0),
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.clock),
-                                              title: Text("Time:"),
-                                              trailing: Text(
-                                                  formattedDt3 != null
-                                                      ? formattedDt3.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(FontAwesomeIcons
-                                                  .thermometerHalf),
-                                              title: Text("Temp:"),
-                                              trailing: Text(three != null
-                                                  ? three.toString() + "\u00B0"
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.info),
-                                              title: Text("Description:"),
-                                              trailing: Text(
-                                                  description3 != null
-                                                      ? description3.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Humidity"),
-                                              trailing: Text(humidity3 != null
-                                                  ? humidity3.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudRain),
-                                              title: Text("Dew Point:"),
-                                              trailing: Text(dewPoint3 != null
-                                                  ? dewPoint3.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudSun),
-                                              title: Text("Cloud coverage:"),
-                                              trailing: Text(cloudCoverage3 !=
-                                                      null
-                                                  ? cloudCoverage3.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.lowVision),
-                                              title: Text("Visibility:"),
-                                              trailing: Text(visibility3 != null
-                                                  ? visibility3.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind speed:"),
-                                              trailing: Text(windSpeed3 != null
-                                                  ? windSpeed3.toString()
-                                                  : "Loading"),
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                    ),
-                                    Container(
-                                      width: 400.0,
-                                      color: Colors.white,
-                                      child: Expanded(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(20.0),
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.clock),
-                                              title: Text("Time:"),
-                                              trailing: Text(
-                                                  formattedDt4 != null
-                                                      ? formattedDt4.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(FontAwesomeIcons
-                                                  .thermometerHalf),
-                                              title: Text("Temp:"),
-                                              trailing: Text(four != null
-                                                  ? four.toString() + "\u00B0"
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.info),
-                                              title: Text("Description:"),
-                                              trailing: Text(
-                                                  description4 != null
-                                                      ? description4.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Humidity"),
-                                              trailing: Text(humidity4 != null
-                                                  ? humidity4.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudRain),
-                                              title: Text("Dew Point:"),
-                                              trailing: Text(dewPoint4 != null
-                                                  ? dewPoint4.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudSun),
-                                              title: Text("Cloud coverage:"),
-                                              trailing: Text(cloudCoverage4 !=
-                                                      null
-                                                  ? cloudCoverage4.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.lowVision),
-                                              title: Text("Visibility:"),
-                                              trailing: Text(visibility4 != null
-                                                  ? visibility4.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind speed:"),
-                                              trailing: Text(windSpeed4 != null
-                                                  ? windSpeed4.toString()
-                                                  : "Loading"),
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                    ),
-                                    Container(
-                                      width: 400.0,
-                                      color: Colors.amber,
-                                      child: Expanded(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(20.0),
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.clock),
-                                              title: Text("Time:"),
-                                              trailing: Text(
-                                                  formattedDt5 != null
-                                                      ? formattedDt5.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(FontAwesomeIcons
-                                                  .thermometerHalf),
-                                              title: Text("Temp:"),
-                                              trailing: Text(five != null
-                                                  ? five.toString() + "\u00B0"
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.info),
-                                              title: Text("Description:"),
-                                              trailing: Text(
-                                                  description5 != null
-                                                      ? description5.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Humidity"),
-                                              trailing: Text(humidity5 != null
-                                                  ? humidity5.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudRain),
-                                              title: Text("Dew Point:"),
-                                              trailing: Text(dewPoint5 != null
-                                                  ? dewPoint5.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudSun),
-                                              title: Text("Cloud coverage:"),
-                                              trailing: Text(cloudCoverage5 !=
-                                                      null
-                                                  ? cloudCoverage5.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.lowVision),
-                                              title: Text("Visibility:"),
-                                              trailing: Text(visibility5 != null
-                                                  ? visibility5.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind speed:"),
-                                              trailing: Text(windSpeed5 != null
-                                                  ? windSpeed5.toString()
-                                                  : "Loading"),
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.symmetric(vertical: 20.0),
-                                height: 200.0,
-                                child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: <Widget>[
-                                    Container(
-                                      width: 400.0,
-                                      color: Colors.amber,
-                                      child: Expanded(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(20.0),
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.clock),
-                                              title: Text("Time:"),
-                                              trailing: Text(formattedDt1Day !=
-                                                      null
-                                                  ? formattedDt1Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(FontAwesomeIcons
-                                                  .thermometerHalf),
-                                              title: Text("Temp:"),
-                                              trailing: Text(oneDay != null
-                                                  ? oneDay.toString() +
-                                                      "\u00B0" +
-                                                      "/" +
-                                                      oneDaym.toString() +
-                                                      "\u00B0"
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.info),
-                                              title: Text("Description:"),
-                                              trailing: Text(description1Day !=
-                                                      null
-                                                  ? description1Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Humidity"),
-                                              trailing: Text(
-                                                  humidity1Day != null
-                                                      ? humidity1Day.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudRain),
-                                              title: Text("Dew Point:"),
-                                              trailing: Text(
-                                                  dewPoint1Day != null
-                                                      ? dewPoint1Day.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudSun),
-                                              title: Text("Cloud coverage:"),
-                                              trailing: Text(
-                                                  cloudCoverage1Day != null
-                                                      ? cloudCoverage1Day
-                                                          .toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.lowVision),
-                                              title: Text("Visibility:"),
-                                              trailing: Text(visibility1Day !=
-                                                      null
-                                                  ? visibility1Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind speed:"),
-                                              trailing: Text(
-                                                  windSpeed1Day != null
-                                                      ? windSpeed1Day.toString()
-                                                      : "Loading"),
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                    ),
-                                    Container(
-                                      width: 400.0,
-                                      color: Colors.white,
-                                      child: Expanded(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(20.0),
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.clock),
-                                              title: Text("Time:"),
-                                              trailing: Text(formattedDt2Day !=
-                                                      null
-                                                  ? formattedDt2Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(FontAwesomeIcons
-                                                  .thermometerHalf),
-                                              title: Text("Temp:"),
-                                              trailing: Text(twoDay != null
-                                                  ? twoDay.toString() +
-                                                      "\u00B0" +
-                                                      "/" +
-                                                      twoDaym.toString() +
-                                                      "\u00B0"
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.info),
-                                              title: Text("Description:"),
-                                              trailing: Text(description2Day !=
-                                                      null
-                                                  ? description2Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Humidity"),
-                                              trailing: Text(
-                                                  humidity2Day != null
-                                                      ? humidity2Day.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudRain),
-                                              title: Text("Dew Point:"),
-                                              trailing: Text(
-                                                  dewPoint2Day != null
-                                                      ? dewPoint2Day.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudSun),
-                                              title: Text("Cloud coverage:"),
-                                              trailing: Text(
-                                                  cloudCoverage2Day != null
-                                                      ? cloudCoverage2Day
-                                                          .toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.lowVision),
-                                              title: Text("Visibility:"),
-                                              trailing: Text(visibility2Day !=
-                                                      null
-                                                  ? visibility2Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind speed:"),
-                                              trailing: Text(
-                                                  windSpeed2Day != null
-                                                      ? windSpeed2Day.toString()
-                                                      : "Loading"),
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                    ),
-                                    Container(
-                                      width: 400.0,
-                                      color: Colors.amber,
-                                      child: Expanded(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(20.0),
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.clock),
-                                              title: Text("Time:"),
-                                              trailing: Text(formattedDt3Day !=
-                                                      null
-                                                  ? formattedDt3Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(FontAwesomeIcons
-                                                  .thermometerHalf),
-                                              title: Text("Temp:"),
-                                              trailing: Text(threeDay != null
-                                                  ? threeDay.toString() +
-                                                      "\u00B0" +
-                                                      "/" +
-                                                      threeDay.toString() +
-                                                      "\u00B0"
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.info),
-                                              title: Text("Description:"),
-                                              trailing: Text(description3Day !=
-                                                      null
-                                                  ? description3Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Humidity"),
-                                              trailing: Text(
-                                                  humidity3Day != null
-                                                      ? humidity3Day.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudRain),
-                                              title: Text("Dew Point:"),
-                                              trailing: Text(
-                                                  dewPoint3Day != null
-                                                      ? dewPoint3Day.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudSun),
-                                              title: Text("Cloud coverage:"),
-                                              trailing: Text(
-                                                  cloudCoverage3Day != null
-                                                      ? cloudCoverage3Day
-                                                          .toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.lowVision),
-                                              title: Text("Visibility:"),
-                                              trailing: Text(visibility3Day !=
-                                                      null
-                                                  ? visibility3Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind speed:"),
-                                              trailing: Text(
-                                                  windSpeed3Day != null
-                                                      ? windSpeed3Day.toString()
-                                                      : "Loading"),
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                    ),
-                                    Container(
-                                      width: 400.0,
-                                      color: Colors.white,
-                                      child: Expanded(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(20.0),
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.clock),
-                                              title: Text("Time:"),
-                                              trailing: Text(formattedDt4Day !=
-                                                      null
-                                                  ? formattedDt4Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(FontAwesomeIcons
-                                                  .thermometerHalf),
-                                              title: Text("Temp:"),
-                                              trailing: Text(fourDay != null
-                                                  ? fourDay.toString() +
-                                                      "\u00B0" +
-                                                      "/" +
-                                                      fourDaym.toString() +
-                                                      "\u00B0"
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.info),
-                                              title: Text("Description:"),
-                                              trailing: Text(description4Day !=
-                                                      null
-                                                  ? description4Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Humidity"),
-                                              trailing: Text(
-                                                  humidity4Day != null
-                                                      ? humidity4Day.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudRain),
-                                              title: Text("Dew Point:"),
-                                              trailing: Text(
-                                                  dewPoint4Day != null
-                                                      ? dewPoint4Day.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudSun),
-                                              title: Text("Cloud coverage:"),
-                                              trailing: Text(
-                                                  cloudCoverage4Day != null
-                                                      ? cloudCoverage4Day
-                                                          .toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.lowVision),
-                                              title: Text("Visibility:"),
-                                              trailing: Text(visibility4Day !=
-                                                      null
-                                                  ? visibility4Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind speed:"),
-                                              trailing: Text(
-                                                  windSpeed4Day != null
-                                                      ? windSpeed4Day.toString()
-                                                      : "Loading"),
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                    ),
-                                    Container(
-                                      width: 400.0,
-                                      color: Colors.amber,
-                                      child: Expanded(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(20.0),
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.clock),
-                                              title: Text("Time:"),
-                                              trailing: Text(formattedDt5Day !=
-                                                      null
-                                                  ? formattedDt5Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(FontAwesomeIcons
-                                                  .thermometerHalf),
-                                              title: Text("Temp:"),
-                                              trailing: Text(fiveDay != null
-                                                  ? fiveDay.toString() +
-                                                      "\u00B0" +
-                                                      "/" +
-                                                      fiveDaym.toString() +
-                                                      "\u00B0"
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.info),
-                                              title: Text("Description:"),
-                                              trailing: Text(description5Day !=
-                                                      null
-                                                  ? description5Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Humidity"),
-                                              trailing: Text(
-                                                  humidity5Day != null
-                                                      ? humidity5Day.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudRain),
-                                              title: Text("Dew Point:"),
-                                              trailing: Text(
-                                                  dewPoint5Day != null
-                                                      ? dewPoint5Day.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudSun),
-                                              title: Text("Cloud coverage:"),
-                                              trailing: Text(
-                                                  cloudCoverage5Day != null
-                                                      ? cloudCoverage5Day
-                                                          .toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.lowVision),
-                                              title: Text("Visibility:"),
-                                              trailing: Text(visibility5Day !=
-                                                      null
-                                                  ? visibility5Day.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.wind),
-                                              title: Text("Wind speed:"),
-                                              trailing: Text(
-                                                  windSpeed5Day != null
-                                                      ? windSpeed5Day.toString()
-                                                      : "Loading"),
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ]))
-                      ])),
-              DefaultTabController(
-                  length: 2, // length of tabs
-                  initialIndex: 0,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Container(
-                          child: TabBar(
-                            labelColor: Colors.amber,
-                            unselectedLabelColor: Colors.black,
-                            tabs: [
-                              Tab(text: 'Sun'),
-                              Tab(text: 'Moon'),
-                            ],
-                          ),
-                        ),
-                        Container(
-                            height: 500, //height of TabBarView
-                            decoration: BoxDecoration(
-                                border: Border(
-                                    top: BorderSide(
-                                        color: Colors.grey, width: 0.5))),
-                            child: TabBarView(children: <Widget>[
-                              Container(
-                                margin: EdgeInsets.symmetric(vertical: 20.0),
-                                height: 500.0,
-                                child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: <Widget>[
-                                    Container(
-                                      width: 400.0,
-                                      color: Colors.amber,
-                                      child: Expanded(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(20.0),
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Sunrise:"),
-                                              trailing: Text(sunrise != null
-                                                  ? sunrise.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Sunset:"),
-                                              trailing: Text(sunset != null
-                                                  ? sunset.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.solidSun),
-                                              title: Text("Solar noon:"),
-                                              trailing: Text(solarNoon != null
-                                                  ? solarNoon.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.solidSun),
-                                              title: Text("Solar midnight"),
-                                              trailing: Text(
-                                                  solarMidnight != null
-                                                      ? solarMidnight.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.sun),
-                                              title: Text("Hours of Daylight:"),
-                                              trailing: Text(hrOfDay != null
-                                                  ? hrOfDay.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.cloudSun),
-                                              title: Text("Hours of Dark:"),
-                                              trailing: Text(hrOfDark != null
-                                                  ? hrOfDark.toString()
-                                                  : "Loading"),
-                                            ),
-                                          ],
-                                        ),
-                                      )),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.symmetric(vertical: 20.0),
-                                height: 500.0,
-                                child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: <Widget>[
-                                    Container(
-                                      width: 400.0,
-                                      color: Colors.blueGrey,
-                                      child: Expanded(
-                                          child: Padding(
-                                        padding: EdgeInsets.all(20.0),
-                                        child: ListView(
-                                          children: <Widget>[
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.moon),
-                                              title: Text("Moon phase:"),
-                                              trailing: Text(moonPhase != null
-                                                  ? moonPhase.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.moon),
-                                              title: Text("Moon rise:"),
-                                              trailing: Text(moonRise != null
-                                                  ? moonRise.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.solidMoon),
-                                              title: Text("Lunar noon:"),
-                                              trailing: Text(lunarNoon != null
-                                                  ? lunarNoon.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.moon),
-                                              title: Text("Moon set:"),
-                                              trailing: Text(moonSet != null
-                                                  ? moonSet.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.solidMoon),
-                                              title: Text("Lunar midnight:"),
-                                              trailing: Text(
-                                                  lunarMidnight != null
-                                                      ? lunarMidnight.toString()
-                                                      : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading: FaIcon(
-                                                  FontAwesomeIcons.solidMoon),
-                                              title: Text("Next full moon:"),
-                                              trailing: Text(nextFull != null
-                                                  ? nextFull.toString()
-                                                  : "Loading"),
-                                            ),
-                                            ListTile(
-                                              leading:
-                                                  FaIcon(FontAwesomeIcons.moon),
-                                              title: Text("Next new moon:"),
-                                              trailing: Text(nextNew != null
-                                                  ? nextNew.toString()
-                                                  : "Loading"),
-                                            ),
-                                          ],
-                                        ),
-                                      )),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ]))
-                      ])),
-              DefaultTabController(
-                  length: 2, // length of tabs
-                  initialIndex: 0,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Text(
-                          "Temperature",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 30,
-                            foreground: Paint()
-                              ..style = PaintingStyle.stroke
-                              ..strokeWidth = 3
-                              ..color = Colors.black38,
-                          ),
-                        ),
-                        Container(
-                          child: TabBar(
-                            labelColor: Colors.amber,
-                            unselectedLabelColor: Colors.black,
-                            tabs: [
-                              Tab(text: 'Next 5 Hours'),
-                              Tab(text: 'Next 5 Days'),
-                            ],
-                          ),
-                        ),
-                        Container(
-                            height: 500, //height of TabBarView
-                            decoration: BoxDecoration(
-                                border: Border(
-                                    top: BorderSide(
-                                        color: Colors.grey, width: 0.5))),
-                            child: TabBarView(children: <Widget>[
-                              Container(
-                                color: Colors.amber,
-                                height: MediaQuery.of(context).size.height / 2,
-                                width: MediaQuery.of(context).size.width * 0.9,
-                                child: BezierChart(
-                                  bezierChartScale: BezierChartScale.CUSTOM,
-                                  xAxisCustomValues: [1, 2, 3, 4, 5],
-                                  series: [
-                                    BezierLine(
-                                      data: [
-                                        DataPoint<double>(
-                                            value: chartDay1Double, xAxis: 1),
-                                        DataPoint<double>(
-                                            value: chartDay2Double, xAxis: 2),
-                                        DataPoint<double>(
-                                            value: chartDay3Double, xAxis: 3),
-                                        DataPoint<double>(
-                                            value: chartDay4Double, xAxis: 4),
-                                        DataPoint<double>(
-                                            value: chartDay5Double, xAxis: 5),
-                                      ],
-                                    ),
-                                  ],
-                                  config: BezierChartConfig(
-                                    verticalIndicatorStrokeWidth: 3.0,
-                                    verticalIndicatorColor: Colors.black26,
-                                    showVerticalIndicator: true,
-                                    backgroundColor: Colors.amber,
-                                    snap: false,
+                          Container(
+                              height: 600, //height of TabBarView
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      top: BorderSide(
+                                          color: Colors.grey, width: 0.5))),
+                              child: TabBarView(children: <Widget>[
+                                Container(
+                                  margin: EdgeInsets.symmetric(vertical: 20.0),
+                                  height: 200.0,
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: <Widget>[
+                                      Container(
+                                        width: 400.0,
+                                        color: Colors.amber,
+                                        child: Expanded(
+                                            child: Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: ListView(
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.clock),
+                                                title: Text("Time:"),
+                                                trailing: Text(formattedDt1 !=
+                                                        null
+                                                    ? formattedDt1.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(FontAwesomeIcons
+                                                    .thermometerHalf),
+                                                title: Text("Temp:"),
+                                                trailing: Text(one != null
+                                                    ? one.toString() + "\u00B0"
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.info),
+                                                title: Text("Description:"),
+                                                trailing: Text(description1 !=
+                                                        null
+                                                    ? description1.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title: Text("Humidity"),
+                                                trailing: Text(humidity1 != null
+                                                    ? humidity1.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudRain),
+                                                title: Text("Dew Point:"),
+                                                trailing: Text(dewPoint1 != null
+                                                    ? dewPoint1.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudSun),
+                                                title: Text("Cloud coverage:"),
+                                                trailing: Text(cloudCoverage1 !=
+                                                        null
+                                                    ? cloudCoverage1.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.lowVision),
+                                                title: Text("Visibility:"),
+                                                trailing: Text(
+                                                    visibility1 != null
+                                                        ? visibility1.toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind speed:"),
+                                                trailing: Text(
+                                                    windSpeed1 != null
+                                                        ? windSpeed1.toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind direction:"),
+                                                trailing: Text(arr[0] != null
+                                                    ? arr[0].toString()
+                                                    : "Loading"),
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                      Container(
+                                        width: 400.0,
+                                        color: Colors.white,
+                                        child: Expanded(
+                                            child: Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: ListView(
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.clock),
+                                                title: Text("Time:"),
+                                                trailing: Text(formattedDt2 !=
+                                                        null
+                                                    ? formattedDt2.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(FontAwesomeIcons
+                                                    .thermometerHalf),
+                                                title: Text("Temp:"),
+                                                trailing: Text(two != null
+                                                    ? two.toString() + "\u00B0"
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.info),
+                                                title: Text("Description:"),
+                                                trailing: Text(description2 !=
+                                                        null
+                                                    ? description2.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title: Text("Humidity"),
+                                                trailing: Text(humidity2 != null
+                                                    ? humidity2.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudRain),
+                                                title: Text("Dew Point:"),
+                                                trailing: Text(dewPoint2 != null
+                                                    ? dewPoint2.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudSun),
+                                                title: Text("Cloud coverage:"),
+                                                trailing: Text(cloudCoverage2 !=
+                                                        null
+                                                    ? cloudCoverage2.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.lowVision),
+                                                title: Text("Visibility:"),
+                                                trailing: Text(
+                                                    visibility2 != null
+                                                        ? visibility2.toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind speed:"),
+                                                trailing: Text(
+                                                    windSpeed2 != null
+                                                        ? windSpeed2.toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind direction:"),
+                                                trailing: Text(arr[1] != null
+                                                    ? arr[1].toString()
+                                                    : "Loading"),
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                      Container(
+                                        width: 400.0,
+                                        color: Colors.amber,
+                                        child: Expanded(
+                                            child: Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: ListView(
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.clock),
+                                                title: Text("Time:"),
+                                                trailing: Text(formattedDt3 !=
+                                                        null
+                                                    ? formattedDt3.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(FontAwesomeIcons
+                                                    .thermometerHalf),
+                                                title: Text("Temp:"),
+                                                trailing: Text(three != null
+                                                    ? three.toString() +
+                                                        "\u00B0"
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.info),
+                                                title: Text("Description:"),
+                                                trailing: Text(description3 !=
+                                                        null
+                                                    ? description3.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title: Text("Humidity"),
+                                                trailing: Text(humidity3 != null
+                                                    ? humidity3.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudRain),
+                                                title: Text("Dew Point:"),
+                                                trailing: Text(dewPoint3 != null
+                                                    ? dewPoint3.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudSun),
+                                                title: Text("Cloud coverage:"),
+                                                trailing: Text(cloudCoverage3 !=
+                                                        null
+                                                    ? cloudCoverage3.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.lowVision),
+                                                title: Text("Visibility:"),
+                                                trailing: Text(
+                                                    visibility3 != null
+                                                        ? visibility3.toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind speed:"),
+                                                trailing: Text(
+                                                    windSpeed3 != null
+                                                        ? windSpeed3.toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind direction:"),
+                                                trailing: Text(arr[2] != null
+                                                    ? arr[2].toString()
+                                                    : "Loading"),
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                      Container(
+                                        width: 400.0,
+                                        color: Colors.white,
+                                        child: Expanded(
+                                            child: Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: ListView(
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.clock),
+                                                title: Text("Time:"),
+                                                trailing: Text(formattedDt4 !=
+                                                        null
+                                                    ? formattedDt4.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(FontAwesomeIcons
+                                                    .thermometerHalf),
+                                                title: Text("Temp:"),
+                                                trailing: Text(four != null
+                                                    ? four.toString() + "\u00B0"
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.info),
+                                                title: Text("Description:"),
+                                                trailing: Text(description4 !=
+                                                        null
+                                                    ? description4.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title: Text("Humidity"),
+                                                trailing: Text(humidity4 != null
+                                                    ? humidity4.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudRain),
+                                                title: Text("Dew Point:"),
+                                                trailing: Text(dewPoint4 != null
+                                                    ? dewPoint4.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudSun),
+                                                title: Text("Cloud coverage:"),
+                                                trailing: Text(cloudCoverage4 !=
+                                                        null
+                                                    ? cloudCoverage4.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.lowVision),
+                                                title: Text("Visibility:"),
+                                                trailing: Text(
+                                                    visibility4 != null
+                                                        ? visibility4.toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind speed:"),
+                                                trailing: Text(
+                                                    windSpeed4 != null
+                                                        ? windSpeed4.toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind direction:"),
+                                                trailing: Text(arr[3] != null
+                                                    ? arr[3].toString()
+                                                    : "Loading"),
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                      Container(
+                                        width: 400.0,
+                                        color: Colors.amber,
+                                        child: Expanded(
+                                            child: Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: ListView(
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.clock),
+                                                title: Text("Time:"),
+                                                trailing: Text(formattedDt5 !=
+                                                        null
+                                                    ? formattedDt5.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(FontAwesomeIcons
+                                                    .thermometerHalf),
+                                                title: Text("Temp:"),
+                                                trailing: Text(five != null
+                                                    ? five.toString() + "\u00B0"
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.info),
+                                                title: Text("Description:"),
+                                                trailing: Text(description5 !=
+                                                        null
+                                                    ? description5.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title: Text("Humidity"),
+                                                trailing: Text(humidity5 != null
+                                                    ? humidity5.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudRain),
+                                                title: Text("Dew Point:"),
+                                                trailing: Text(dewPoint5 != null
+                                                    ? dewPoint5.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudSun),
+                                                title: Text("Cloud coverage:"),
+                                                trailing: Text(cloudCoverage5 !=
+                                                        null
+                                                    ? cloudCoverage5.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.lowVision),
+                                                title: Text("Visibility:"),
+                                                trailing: Text(
+                                                    visibility5 != null
+                                                        ? visibility5.toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind speed:"),
+                                                trailing: Text(
+                                                    windSpeed5 != null
+                                                        ? windSpeed5.toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind direction:"),
+                                                trailing: Text(arr[4] != null
+                                                    ? arr[4].toString()
+                                                    : "Loading"),
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                              Container(
-                                color: Colors.amber,
-                                height: MediaQuery.of(context).size.height / 2,
-                                width: MediaQuery.of(context).size.width * 0.9,
-                                child: BezierChart(
-                                  bezierChartScale: BezierChartScale.CUSTOM,
-                                  xAxisCustomValues: [1, 2, 3, 4, 5],
-                                  series: [
-                                    BezierLine(
-                                      data: [
-                                        DataPoint<double>(
-                                            value: chartH1Double, xAxis: 1),
-                                        DataPoint<double>(
-                                            value: chartH2Double, xAxis: 2),
-                                        DataPoint<double>(
-                                            value: chartH3Double, xAxis: 3),
-                                        DataPoint<double>(
-                                            value: chartH4Double, xAxis: 4),
-                                        DataPoint<double>(
-                                            value: chartDay5Double, xAxis: 5),
-                                      ],
-                                    ),
-                                  ],
-                                  config: BezierChartConfig(
-                                    verticalIndicatorStrokeWidth: 3.0,
-                                    verticalIndicatorColor: Colors.black26,
-                                    showVerticalIndicator: true,
-                                    backgroundColor: Colors.amber,
-                                    snap: false,
+                                Container(
+                                  margin: EdgeInsets.symmetric(vertical: 20.0),
+                                  height: 200.0,
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: <Widget>[
+                                      Container(
+                                        width: 400.0,
+                                        color: Colors.amber,
+                                        child: Expanded(
+                                            child: Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: ListView(
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.clock),
+                                                title: Text("Time:"),
+                                                trailing: Text(
+                                                    formattedDt1Day != null
+                                                        ? formattedDt1Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(FontAwesomeIcons
+                                                    .thermometerHalf),
+                                                title: Text("Temp:"),
+                                                trailing: Text(oneDay != null
+                                                    ? oneDay.toString() +
+                                                        "\u00B0" +
+                                                        "/" +
+                                                        oneDaym.toString() +
+                                                        "\u00B0"
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.info),
+                                                title: Text("Description:"),
+                                                trailing: Text(
+                                                    description1Day != null
+                                                        ? description1Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title: Text("Humidity"),
+                                                trailing: Text(humidity1Day !=
+                                                        null
+                                                    ? humidity1Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudRain),
+                                                title: Text("Dew Point:"),
+                                                trailing: Text(dewPoint1Day !=
+                                                        null
+                                                    ? dewPoint1Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudSun),
+                                                title: Text("Cloud coverage:"),
+                                                trailing: Text(
+                                                    cloudCoverage1Day != null
+                                                        ? cloudCoverage1Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.lowVision),
+                                                title: Text("Visibility:"),
+                                                trailing: Text(visibility1Day !=
+                                                        null
+                                                    ? visibility1Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind speed:"),
+                                                trailing: Text(windSpeed1Day !=
+                                                        null
+                                                    ? windSpeed1Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind direction:"),
+                                                trailing: Text(arr[5] != null
+                                                    ? arr[5].toString()
+                                                    : "Loading"),
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                      Container(
+                                        width: 400.0,
+                                        color: Colors.white,
+                                        child: Expanded(
+                                            child: Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: ListView(
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.clock),
+                                                title: Text("Time:"),
+                                                trailing: Text(
+                                                    formattedDt2Day != null
+                                                        ? formattedDt2Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(FontAwesomeIcons
+                                                    .thermometerHalf),
+                                                title: Text("Temp:"),
+                                                trailing: Text(twoDay != null
+                                                    ? twoDay.toString() +
+                                                        "\u00B0" +
+                                                        "/" +
+                                                        twoDaym.toString() +
+                                                        "\u00B0"
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.info),
+                                                title: Text("Description:"),
+                                                trailing: Text(
+                                                    description2Day != null
+                                                        ? description2Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title: Text("Humidity"),
+                                                trailing: Text(humidity2Day !=
+                                                        null
+                                                    ? humidity2Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudRain),
+                                                title: Text("Dew Point:"),
+                                                trailing: Text(dewPoint2Day !=
+                                                        null
+                                                    ? dewPoint2Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudSun),
+                                                title: Text("Cloud coverage:"),
+                                                trailing: Text(
+                                                    cloudCoverage2Day != null
+                                                        ? cloudCoverage2Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.lowVision),
+                                                title: Text("Visibility:"),
+                                                trailing: Text(visibility2Day !=
+                                                        null
+                                                    ? visibility2Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind speed:"),
+                                                trailing: Text(windSpeed2Day !=
+                                                        null
+                                                    ? windSpeed2Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind direction:"),
+                                                trailing: Text(arr[6] != null
+                                                    ? arr[6].toString()
+                                                    : "Loading"),
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                      Container(
+                                        width: 400.0,
+                                        color: Colors.amber,
+                                        child: Expanded(
+                                            child: Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: ListView(
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.clock),
+                                                title: Text("Time:"),
+                                                trailing: Text(
+                                                    formattedDt3Day != null
+                                                        ? formattedDt3Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(FontAwesomeIcons
+                                                    .thermometerHalf),
+                                                title: Text("Temp:"),
+                                                trailing: Text(threeDay != null
+                                                    ? threeDay.toString() +
+                                                        "\u00B0" +
+                                                        "/" +
+                                                        threeDay.toString() +
+                                                        "\u00B0"
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.info),
+                                                title: Text("Description:"),
+                                                trailing: Text(
+                                                    description3Day != null
+                                                        ? description3Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title: Text("Humidity"),
+                                                trailing: Text(humidity3Day !=
+                                                        null
+                                                    ? humidity3Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudRain),
+                                                title: Text("Dew Point:"),
+                                                trailing: Text(dewPoint3Day !=
+                                                        null
+                                                    ? dewPoint3Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudSun),
+                                                title: Text("Cloud coverage:"),
+                                                trailing: Text(
+                                                    cloudCoverage3Day != null
+                                                        ? cloudCoverage3Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.lowVision),
+                                                title: Text("Visibility:"),
+                                                trailing: Text(visibility3Day !=
+                                                        null
+                                                    ? visibility3Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind speed:"),
+                                                trailing: Text(windSpeed3Day !=
+                                                        null
+                                                    ? windSpeed3Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind direction:"),
+                                                trailing: Text(arr[7] != null
+                                                    ? arr[7].toString()
+                                                    : "Loading"),
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                      Container(
+                                        width: 400.0,
+                                        color: Colors.white,
+                                        child: Expanded(
+                                            child: Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: ListView(
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.clock),
+                                                title: Text("Time:"),
+                                                trailing: Text(
+                                                    formattedDt4Day != null
+                                                        ? formattedDt4Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(FontAwesomeIcons
+                                                    .thermometerHalf),
+                                                title: Text("Temp:"),
+                                                trailing: Text(fourDay != null
+                                                    ? fourDay.toString() +
+                                                        "\u00B0" +
+                                                        "/" +
+                                                        fourDaym.toString() +
+                                                        "\u00B0"
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.info),
+                                                title: Text("Description:"),
+                                                trailing: Text(
+                                                    description4Day != null
+                                                        ? description4Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title: Text("Humidity"),
+                                                trailing: Text(humidity4Day !=
+                                                        null
+                                                    ? humidity4Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudRain),
+                                                title: Text("Dew Point:"),
+                                                trailing: Text(dewPoint4Day !=
+                                                        null
+                                                    ? dewPoint4Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudSun),
+                                                title: Text("Cloud coverage:"),
+                                                trailing: Text(
+                                                    cloudCoverage4Day != null
+                                                        ? cloudCoverage4Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.lowVision),
+                                                title: Text("Visibility:"),
+                                                trailing: Text(visibility4Day !=
+                                                        null
+                                                    ? visibility4Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind speed:"),
+                                                trailing: Text(windSpeed4Day !=
+                                                        null
+                                                    ? windSpeed4Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind direction:"),
+                                                trailing: Text(arr[8] != null
+                                                    ? arr[8].toString()
+                                                    : "Loading"),
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                      Container(
+                                        width: 400.0,
+                                        color: Colors.amber,
+                                        child: Expanded(
+                                            child: Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: ListView(
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.clock),
+                                                title: Text("Time:"),
+                                                trailing: Text(
+                                                    formattedDt5Day != null
+                                                        ? formattedDt5Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(FontAwesomeIcons
+                                                    .thermometerHalf),
+                                                title: Text("Temp:"),
+                                                trailing: Text(fiveDay != null
+                                                    ? fiveDay.toString() +
+                                                        "\u00B0" +
+                                                        "/" +
+                                                        fiveDaym.toString() +
+                                                        "\u00B0"
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.info),
+                                                title: Text("Description:"),
+                                                trailing: Text(
+                                                    description5Day != null
+                                                        ? description5Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title: Text("Humidity"),
+                                                trailing: Text(humidity5Day !=
+                                                        null
+                                                    ? humidity5Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudRain),
+                                                title: Text("Dew Point:"),
+                                                trailing: Text(dewPoint5Day !=
+                                                        null
+                                                    ? dewPoint5Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudSun),
+                                                title: Text("Cloud coverage:"),
+                                                trailing: Text(
+                                                    cloudCoverage5Day != null
+                                                        ? cloudCoverage5Day
+                                                            .toString()
+                                                        : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.lowVision),
+                                                title: Text("Visibility:"),
+                                                trailing: Text(visibility5Day !=
+                                                        null
+                                                    ? visibility5Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind speed:"),
+                                                trailing: Text(windSpeed5Day !=
+                                                        null
+                                                    ? windSpeed5Day.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.wind),
+                                                title: Text("Wind direction:"),
+                                                trailing: Text(arr[9] != null
+                                                    ? arr[9].toString()
+                                                    : "Loading"),
+                                              )
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ]))
-                      ])),
-              DefaultTabController(
-                  length: 2, // length of tabs
-                  initialIndex: 0,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Text(
-                          "Wind Speed",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 30,
-                            foreground: Paint()
-                              ..style = PaintingStyle.stroke
-                              ..strokeWidth = 3
-                              ..color = Colors.black38,
+                              ]))
+                        ])),
+                DefaultTabController(
+                    length: 2, // length of tabs
+                    initialIndex: 0,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Container(
+                            child: TabBar(
+                              labelColor: Colors.amber,
+                              unselectedLabelColor: Colors.black,
+                              tabs: [
+                                Tab(text: 'Sun'),
+                                Tab(text: 'Moon'),
+                              ],
+                            ),
                           ),
-                        ),
-                        Container(
-                          child: TabBar(
-                            labelColor: Colors.amber,
-                            unselectedLabelColor: Colors.black,
-                            tabs: [
-                              Tab(text: 'Next 5 Hours'),
-                              Tab(text: 'Next 5 Days'),
-                            ],
+                          Container(
+                              height: 500, //height of TabBarView
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      top: BorderSide(
+                                          color: Colors.grey, width: 0.5))),
+                              child: TabBarView(children: <Widget>[
+                                Container(
+                                  margin: EdgeInsets.symmetric(vertical: 20.0),
+                                  height: 500.0,
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: <Widget>[
+                                      Container(
+                                        width: 400.0,
+                                        color: Colors.amber,
+                                        child: Expanded(
+                                            child: Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: ListView(
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title: Text("Sunrise:"),
+                                                trailing: Text(sunrise != null
+                                                    ? sunrise.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title: Text("Sunset:"),
+                                                trailing: Text(sunset != null
+                                                    ? sunset.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.solidSun),
+                                                title: Text("Solar noon:"),
+                                                trailing: Text(solarNoon != null
+                                                    ? solarNoon.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.solidSun),
+                                                title: Text("Solar midnight"),
+                                                trailing: Text(solarMidnight !=
+                                                        null
+                                                    ? solarMidnight.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.sun),
+                                                title:
+                                                    Text("Hours of Daylight:"),
+                                                trailing: Text(hrOfDay != null
+                                                    ? hrOfDay.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.cloudSun),
+                                                title: Text("Hours of Dark:"),
+                                                trailing: Text(hrOfDark != null
+                                                    ? hrOfDark.toString()
+                                                    : "Loading"),
+                                              ),
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.symmetric(vertical: 20.0),
+                                  height: 500.0,
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: <Widget>[
+                                      Container(
+                                        width: 400.0,
+                                        color: Colors.blueGrey,
+                                        child: Expanded(
+                                            child: Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: ListView(
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.moon),
+                                                title: Text("Moon phase:"),
+                                                trailing: Text(moonPhase != null
+                                                    ? moonPhase.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.moon),
+                                                title: Text("Moon rise:"),
+                                                trailing: Text(moonRise != null
+                                                    ? moonRise.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.solidMoon),
+                                                title: Text("Lunar noon:"),
+                                                trailing: Text(lunarNoon != null
+                                                    ? lunarNoon.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.moon),
+                                                title: Text("Moon set:"),
+                                                trailing: Text(moonSet != null
+                                                    ? moonSet.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.solidMoon),
+                                                title: Text("Lunar midnight:"),
+                                                trailing: Text(lunarMidnight !=
+                                                        null
+                                                    ? lunarMidnight.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.solidMoon),
+                                                title: Text("Next full moon:"),
+                                                trailing: Text(nextFull != null
+                                                    ? nextFull.toString()
+                                                    : "Loading"),
+                                              ),
+                                              ListTile(
+                                                leading: FaIcon(
+                                                    FontAwesomeIcons.moon),
+                                                title: Text("Next new moon:"),
+                                                trailing: Text(nextNew != null
+                                                    ? nextNew.toString()
+                                                    : "Loading"),
+                                              ),
+                                            ],
+                                          ),
+                                        )),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ]))
+                        ])),
+                DefaultTabController(
+                    length: 2, // length of tabs
+                    initialIndex: 0,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Text(
+                            "Temperature",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 30,
+                              foreground: Paint()
+                                ..style = PaintingStyle.stroke
+                                ..strokeWidth = 3
+                                ..color = Colors.black38,
+                            ),
                           ),
-                        ),
-                        Container(
-                            height: 500, //height of TabBarView
-                            decoration: BoxDecoration(
-                                border: Border(
-                                    top: BorderSide(
-                                        color: Colors.grey, width: 0.5))),
-                            child: TabBarView(children: <Widget>[
-                              Container(
-                                color: Colors.amber,
-                                height: MediaQuery.of(context).size.height / 2,
-                                width: MediaQuery.of(context).size.width * 0.9,
-                                child: BezierChart(
-                                  bezierChartScale: BezierChartScale.CUSTOM,
-                                  xAxisCustomValues: [1, 2, 3, 4, 5],
-                                  series: [
-                                    BezierLine(
-                                      data: [
-                                        DataPoint<double>(
-                                            value: chartDay11Double, xAxis: 1),
-                                        DataPoint<double>(
-                                            value: chartDay12Double, xAxis: 2),
-                                        DataPoint<double>(
-                                            value: chartDay13Double, xAxis: 3),
-                                        DataPoint<double>(
-                                            value: chartDay14Double, xAxis: 4),
-                                        DataPoint<double>(
-                                            value: chartDay15Double, xAxis: 5),
-                                      ],
+                          Container(
+                            child: TabBar(
+                              labelColor: Colors.amber,
+                              unselectedLabelColor: Colors.black,
+                              tabs: [
+                                Tab(text: 'Next 5 Hours'),
+                                Tab(text: 'Next 5 Days'),
+                              ],
+                            ),
+                          ),
+                          Container(
+                              height: 500, //height of TabBarView
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      top: BorderSide(
+                                          color: Colors.grey, width: 0.5))),
+                              child: TabBarView(children: <Widget>[
+                                Container(
+                                  color: Colors.amber,
+                                  height:
+                                      MediaQuery.of(context).size.height / 2,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  child: BezierChart(
+                                    bezierChartScale: BezierChartScale.CUSTOM,
+                                    xAxisCustomValues: [1, 2, 3, 4, 5],
+                                    series: [
+                                      BezierLine(
+                                        data: [
+                                          DataPoint<double>(
+                                              value: chartDay1Double, xAxis: 1),
+                                          DataPoint<double>(
+                                              value: chartDay2Double, xAxis: 2),
+                                          DataPoint<double>(
+                                              value: chartDay3Double, xAxis: 3),
+                                          DataPoint<double>(
+                                              value: chartDay4Double, xAxis: 4),
+                                          DataPoint<double>(
+                                              value: chartDay5Double, xAxis: 5),
+                                        ],
+                                      ),
+                                    ],
+                                    config: BezierChartConfig(
+                                      verticalIndicatorStrokeWidth: 3.0,
+                                      verticalIndicatorColor: Colors.black26,
+                                      showVerticalIndicator: true,
+                                      backgroundColor: Colors.amber,
+                                      snap: false,
                                     ),
-                                  ],
-                                  config: BezierChartConfig(
-                                    verticalIndicatorStrokeWidth: 3.0,
-                                    verticalIndicatorColor: Colors.black26,
-                                    showVerticalIndicator: true,
-                                    backgroundColor: Colors.amber,
-                                    snap: false,
                                   ),
                                 ),
-                              ),
-                              Container(
-                                color: Colors.amber,
-                                height: MediaQuery.of(context).size.height / 2,
-                                width: MediaQuery.of(context).size.width * 0.9,
-                                child: BezierChart(
-                                  bezierChartScale: BezierChartScale.CUSTOM,
-                                  xAxisCustomValues: [1, 2, 3, 4, 5],
-                                  series: [
-                                    BezierLine(
-                                      data: [
-                                        DataPoint<double>(
-                                            value: chartH11Double, xAxis: 1),
-                                        DataPoint<double>(
-                                            value: chartH12Double, xAxis: 2),
-                                        DataPoint<double>(
-                                            value: chartH13Double, xAxis: 3),
-                                        DataPoint<double>(
-                                            value: chartH14Double, xAxis: 4),
-                                        DataPoint<double>(
-                                            value: chartDay15Double, xAxis: 5),
-                                      ],
+                                Container(
+                                  color: Colors.amber,
+                                  height:
+                                      MediaQuery.of(context).size.height / 2,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  child: BezierChart(
+                                    bezierChartScale: BezierChartScale.CUSTOM,
+                                    xAxisCustomValues: [1, 2, 3, 4, 5],
+                                    series: [
+                                      BezierLine(
+                                        data: [
+                                          DataPoint<double>(
+                                              value: chartH1Double, xAxis: 1),
+                                          DataPoint<double>(
+                                              value: chartH2Double, xAxis: 2),
+                                          DataPoint<double>(
+                                              value: chartH3Double, xAxis: 3),
+                                          DataPoint<double>(
+                                              value: chartH4Double, xAxis: 4),
+                                          DataPoint<double>(
+                                              value: chartDay5Double, xAxis: 5),
+                                        ],
+                                      ),
+                                    ],
+                                    config: BezierChartConfig(
+                                      verticalIndicatorStrokeWidth: 3.0,
+                                      verticalIndicatorColor: Colors.black26,
+                                      showVerticalIndicator: true,
+                                      backgroundColor: Colors.amber,
+                                      snap: false,
                                     ),
-                                  ],
-                                  config: BezierChartConfig(
-                                    verticalIndicatorStrokeWidth: 3.0,
-                                    verticalIndicatorColor: Colors.black26,
-                                    showVerticalIndicator: true,
-                                    backgroundColor: Colors.amber,
-                                    snap: false,
                                   ),
                                 ),
-                              ),
-                            ]))
-                      ])),
-            ],
+                              ]))
+                        ])),
+                DefaultTabController(
+                    length: 2, // length of tabs
+                    initialIndex: 0,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Text(
+                            "Wind Speed",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 30,
+                              foreground: Paint()
+                                ..style = PaintingStyle.stroke
+                                ..strokeWidth = 3
+                                ..color = Colors.black38,
+                            ),
+                          ),
+                          Container(
+                            child: TabBar(
+                              labelColor: Colors.amber,
+                              unselectedLabelColor: Colors.black,
+                              tabs: [
+                                Tab(text: 'Next 5 Hours'),
+                                Tab(text: 'Next 5 Days'),
+                              ],
+                            ),
+                          ),
+                          Container(
+                              height: 500, //height of TabBarView
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      top: BorderSide(
+                                          color: Colors.grey, width: 0.5))),
+                              child: TabBarView(children: <Widget>[
+                                Container(
+                                  color: Colors.amber,
+                                  height:
+                                      MediaQuery.of(context).size.height / 2,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  child: BezierChart(
+                                    bezierChartScale: BezierChartScale.CUSTOM,
+                                    xAxisCustomValues: [1, 2, 3, 4, 5],
+                                    series: [
+                                      BezierLine(
+                                        data: [
+                                          DataPoint<double>(
+                                              value: chartDay11Double,
+                                              xAxis: 1),
+                                          DataPoint<double>(
+                                              value: chartDay12Double,
+                                              xAxis: 2),
+                                          DataPoint<double>(
+                                              value: chartDay13Double,
+                                              xAxis: 3),
+                                          DataPoint<double>(
+                                              value: chartDay14Double,
+                                              xAxis: 4),
+                                          DataPoint<double>(
+                                              value: chartDay15Double,
+                                              xAxis: 5),
+                                        ],
+                                      ),
+                                    ],
+                                    config: BezierChartConfig(
+                                      verticalIndicatorStrokeWidth: 3.0,
+                                      verticalIndicatorColor: Colors.black26,
+                                      showVerticalIndicator: true,
+                                      backgroundColor: Colors.amber,
+                                      snap: false,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  color: Colors.amber,
+                                  height:
+                                      MediaQuery.of(context).size.height / 2,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  child: BezierChart(
+                                    bezierChartScale: BezierChartScale.CUSTOM,
+                                    xAxisCustomValues: [1, 2, 3, 4, 5],
+                                    series: [
+                                      BezierLine(
+                                        data: [
+                                          DataPoint<double>(
+                                              value: chartH11Double, xAxis: 1),
+                                          DataPoint<double>(
+                                              value: chartH12Double, xAxis: 2),
+                                          DataPoint<double>(
+                                              value: chartH13Double, xAxis: 3),
+                                          DataPoint<double>(
+                                              value: chartH14Double, xAxis: 4),
+                                          DataPoint<double>(
+                                              value: chartDay15Double,
+                                              xAxis: 5),
+                                        ],
+                                      ),
+                                    ],
+                                    config: BezierChartConfig(
+                                      verticalIndicatorStrokeWidth: 3.0,
+                                      verticalIndicatorColor: Colors.black26,
+                                      showVerticalIndicator: true,
+                                      backgroundColor: Colors.amber,
+                                      snap: false,
+                                    ),
+                                  ),
+                                ),
+                              ]))
+                        ])),
+              ],
+            ),
           ),
+          // This trailing comma makes auto-formatting nicer for build methods.
         ),
-        // This trailing comma makes auto-formatting nicer for build methods.
-      ),
+      ]),
     );
   }
 }
