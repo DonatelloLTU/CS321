@@ -773,7 +773,6 @@ class HomeState extends State<Home> {
               ),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 20),
-                height: 600,
                 child: Column(
                   children: [
                     SelectState(
@@ -797,9 +796,25 @@ class HomeState extends State<Home> {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.add),
+                icon: Icon(Icons.add_circle),
                 onPressed: () {
                   addCityStateToList();
+                  return showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: Text("Success"),
+                      content: Text(
+                          "You have successfully added new city to the list!"),
+                      actions: <Widget>[
+                        FlatButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                          },
+                          child: Text("OK"),
+                        ),
+                      ],
+                    ),
+                  );
                 },
               ),
             ]),
