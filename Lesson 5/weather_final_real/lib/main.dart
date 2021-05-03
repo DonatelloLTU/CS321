@@ -316,7 +316,7 @@ class HomeState extends State<Home> {
     var results1 = jsonDecode(response1.body);
     setState(() {
       /*
-      Hourly
+      Hourly temperature, wind, direction, time
        */
       //in an hour
       this.day = DateFormat.d().format(dt);
