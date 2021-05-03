@@ -13,6 +13,9 @@ import 'ad_state.dart';
 import 'bezier-chart/lib/bezier_chart.dart';
 import 'countries/country_state_city_picker.dart';
 
+///Main Class to run weather application
+/// Author: Donatas Vasauskas
+///Version: 2021-04-29.01
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   final initFuture = MobileAds.instance.initialize();
@@ -39,6 +42,7 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
   BannerAd banner;
 
+  ///Banner ad
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -55,6 +59,7 @@ class HomeState extends State<Home> {
     });
   }
 
+  //Values for API and so
   final _formKey = GlobalKey<FormState>();
   var arr = List(10);
   var temp;
@@ -83,7 +88,7 @@ class HomeState extends State<Home> {
   var fourDaym;
   var fiveDay;
   var fiveDaym;
-
+  //Value for API
   DateTime dt = DateTime.now();
   String day;
   String month;
@@ -108,109 +113,109 @@ class HomeState extends State<Home> {
   String formattedDt4Day;
   DateTime dt5Day;
   String formattedDt5Day;
-
+  //Value for weather feels like
   var feels0;
   var feels1;
   var feels2;
   var feels3;
   var feels4;
   var feels5;
-
+  //Values for weather description
   var description0;
   var description1;
   var description2;
   var description3;
   var description4;
   var description5;
-
+  //Values for weather humidity
   var humidity0;
   var humidity1;
   var humidity2;
   var humidity3;
   var humidity4;
   var humidity5;
-
+  //Values for dew point
   var dewPoint0;
   var dewPoint1;
   var dewPoint2;
   var dewPoint3;
   var dewPoint4;
   var dewPoint5;
-
+  //Values for cloud coverqge
   var cloudCoverage0;
   var cloudCoverage1;
   var cloudCoverage2;
   var cloudCoverage3;
   var cloudCoverage4;
   var cloudCoverage5;
-
+  //Values for visibility
   var visibility0;
   var visibility1;
   var visibility2;
   var visibility3;
   var visibility4;
   var visibility5;
-
+  //Values for wind speed
   var windSpeed1;
   var windSpeed2;
   var windSpeed3;
   var windSpeed4;
   var windSpeed5;
-
+  //Values for temp
   var temp1;
   var temp2;
   var temp3;
   var temp4;
   var temp5;
-
+  //Values for feels like day
   var feels0Day;
   var feels1Day;
   var feels2Day;
   var feels3Day;
   var feels4Day;
   var feels5Day;
-
+  //Values for daily descriptions
   var description0Day;
   var description1Day;
   var description2Day;
   var description3Day;
   var description4Day;
   var description5Day;
-
+  //Values for daily humidity
   var humidity0Day;
   var humidity1Day;
   var humidity2Day;
   var humidity3Day;
   var humidity4Day;
   var humidity5Day;
-
+  //Values for daily deew point
   var dewPoint0Day;
   var dewPoint1Day;
   var dewPoint2Day;
   var dewPoint3Day;
   var dewPoint4Day;
   var dewPoint5Day;
-
+  //Values for daily cloud coverage
   var cloudCoverage0Day;
   var cloudCoverage1Day;
   var cloudCoverage2Day;
   var cloudCoverage3Day;
   var cloudCoverage4Day;
   var cloudCoverage5Day;
-
+  //Values for daily visibility
   var visibility0Day;
   var visibility1Day;
   var visibility2Day;
   var visibility3Day;
   var visibility4Day;
   var visibility5Day;
-
+  //Values of wind speed daily
   var windSpeed1Day;
   var windSpeed2Day;
   var windSpeed3Day;
   var windSpeed4Day;
   var windSpeed5Day;
-
+  //Values of wind direction
   var windDir1 = -1;
   var windDir1Double = -1;
   var windDir2 = -1;
@@ -231,7 +236,7 @@ class HomeState extends State<Home> {
   var windDirDay4Double = -1;
   var windDirDay5 = -1;
   var windDirDay5Double = -1;
-
+  //Values of sun and moon data
   var sunrise;
   var sunset;
   var solarNoon;
@@ -246,45 +251,26 @@ class HomeState extends State<Home> {
   var nextFull;
   var nextNew;
   String units;
-
+  //Values for charts
   double chartDay1Double = 0;
-
   double chartDay2Double = 0;
-
   double chartDay3Double = 0;
-
   double chartDay4Double = 0;
-
   double chartDay5Double = 0;
-
   double chartH1Double = 0;
-
   double chartH2Double = 0;
-
   double chartH3Double = 0;
-
   double chartH4Double = 0;
-
   double chartH5Double = 0;
-
   double chartDay11Double = 0;
-
   double chartDay12Double = 0;
-
   double chartDay13Double = 0;
-
   double chartDay14Double = 0;
-
   double chartDay15Double = 0;
-
   double chartH11Double = 0;
-
   double chartH12Double = 0;
-
   double chartH13Double = 0;
-
   double chartH14Double = 0;
-
   double chartH15Double = 0;
 
   bool isSwitched = false;
@@ -296,6 +282,7 @@ class HomeState extends State<Home> {
   bool _snowIsVisible = false;
   bool _rainIsVisible = false;
 
+  ///Get weather method calls api and adds weather data to main view
   Future getWeather() async {
     http.Response response = await http.get(
         "http://api.openweathermap.org/data/2.5/weather?q=" +
@@ -345,7 +332,7 @@ class HomeState extends State<Home> {
       this.windDir1 = results1['hourly'][3]['wind_deg'];
       chartDay11Double = double.parse(windSpeed1.toString());
 
-      //in 2 hour
+      //in 2 hours
       this.two = results1['hourly'][4]['temp'];
       dt2 = dt.add(new Duration(hours: 2));
       formattedDt2 = DateFormat.Hms().format(dt2);
@@ -495,6 +482,8 @@ class HomeState extends State<Home> {
     });
   }
 
+  ///GetSunMoon method calls API with all the data and manually assigns values.
+  ///Formatting applied at the end
   Future getSunMoon() async {
     DateTime now = new DateTime.now();
     var date = new DateFormat('yyyy-MM-dd');
@@ -524,6 +513,7 @@ class HomeState extends State<Home> {
       this.nextFull = "???";
       this.nextNew = "???";
 
+      //Formating hours
       const start = "T";
       const end = "-";
 
@@ -588,6 +578,7 @@ class HomeState extends State<Home> {
   Item selectedUser;
   List<Item> users = <Item>[];
 
+  ///AddCityStateToList method adds selected city from Location picker and adds it to the list within the main screen of the app.
   void addCityStateToList() {
     setState(() {
       if (cityValue != null) {
@@ -603,12 +594,15 @@ class HomeState extends State<Home> {
     });
   }
 
+  ///Method to call them all
+  ///Needs to be erased.
   void all() {
     setState(() {
       this.getWeather();
     });
   }
 
+  ///Method to change backround of the app depending on actual weather.
   void changeBaground() {
     setState(() {
       if (description.toString() == "light rain" ||
@@ -657,6 +651,7 @@ class HomeState extends State<Home> {
     });
   }
 
+  ///Method to add initial city Parkersburg
   void addInitialCityStateToList() {
     setState(() {
       users.insert(
@@ -671,6 +666,7 @@ class HomeState extends State<Home> {
     });
   }
 
+  ///Method to change degrees to actual compass direction of the wind
   void changeToDirection() {
     setState(() {
       arr[0] = windDir1;
@@ -718,6 +714,7 @@ class HomeState extends State<Home> {
     });
   }
 
+  ///MEthod switches units of the app.
   String switchChange() {
     if (isSwitched == false) {
       units = 'imperial';
@@ -727,6 +724,7 @@ class HomeState extends State<Home> {
     return units;
   }
 
+  ///Initializing app
   @override
   void initState() {
     super.initState();
@@ -2370,6 +2368,7 @@ class HomeState extends State<Home> {
   }
 }
 
+///Class item for city list within the app
 class Item {
   const Item(this.name, this.icon);
   final String name;

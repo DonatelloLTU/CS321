@@ -4,6 +4,12 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+///
+/// Simple weather related widget, which can be freely combined to form a variety of weather backgrounds
+/// Author: carendule
+/// Version: 2020-03-27.(1.0.5)
+/// Edited by: Donatas Vasauskas
+/// Site: https://pub.dev/packages/weather_widget
 class WeatherWidget extends StatefulWidget {
   final Size size;
   final String weather;

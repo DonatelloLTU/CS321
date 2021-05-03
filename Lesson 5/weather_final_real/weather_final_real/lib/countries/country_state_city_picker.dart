@@ -7,6 +7,11 @@ import 'package:flutter/services.dart' show rootBundle;
 
 import 'model/select_status_model.dart' as StatusModel;
 
+///
+/// A flutter package for showing a country, states, and cities. In addition it gives the possibility to select a list of countries, States and Cities depends on Selected.
+/// Author: prof22
+/// Version: 2021-02-12.(1.2.7)
+/// Site: https://pub.dev/packages/country_state_city_picker
 class SelectState extends StatefulWidget {
   final ValueChanged<String> onCountryChanged;
   final ValueChanged<String> onStateChanged;
